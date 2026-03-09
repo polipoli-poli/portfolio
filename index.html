@@ -769,13 +769,6 @@
     // ← 在这里继续添加，img 路径格式：'images/20250101.jpg'
   ];
 
-  /* 错落布局 pattern — 每8格一循环，col/row span值 */
-  const LAYOUT = [
-    {col:5,row:6}, {col:4,row:4}, {col:3,row:4},
-    {col:3,row:5}, {col:4,row:5}, {col:5,row:5},
-    {col:4,row:4}, {col:4,row:4},
-  ];
-
   const SUITS_TL = ['♥','♠','♦','♣','♥','♠','♦','♣'];
   const SUITS_TR = ['♠','♦','♣','♥','♠','♦','♣','♥'];
   const SUITS_BL = ['♣','♥','♠','♦','♣','♥','♠','♦'];
@@ -783,28 +776,31 @@
   const SUIT_LABEL = ['♥','♦','♠','♣','♥','♦','♠','♣'];
   const IS_RED = (s) => s==='♥'||s==='♦';
 
-  const PLACEHOLDER_SVG = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='120'%3E%3Cpolygon points='40,0 80,60 40,120 0,60' fill='%23a8c8e0' opacity='0.5'/%3E%3C/svg%3E")`;
+  /* 布局根据图片实际比例动态分配列宽 */
+  function getColSpan(ratio) {
+    if (ratio >= 1.5) return 7;       // 很横
+    if (ratio >= 1.0) return 5;       // 略横/方
+    if (ratio >= 0.6) return 4;       // 略竖
+    return 3;                          // 很竖
+  }
 
   function buildGallery() {
     const grid = document.getElementById('galleryGrid');
     grid.innerHTML = '';
     ARTWORKS.forEach((w, i) => {
-      const layout = LAYOUT[i % LAYOUT.length];
       const si = i % 8;
       const tl = SUITS_TL[si], tr = SUITS_TR[si];
       const bl = SUITS_BL[si], br = SUITS_BR[si];
       const suit = SUIT_LABEL[si];
       const suitLabel = (w.cat==='fanart' ? suit+' Fan Art' : suit+' Original');
-      const imgHtml = w.img
-        ? `<img src="${w.img}" alt="${w.title}" loading="lazy">`
-        : '';
+      const imgHtml = w.img ? `<img src="${w.img}" alt="${w.title}" loading="lazy">` : '';
       const imgClass = w.img ? 'g-img' : 'g-img placeholder';
 
       const el = document.createElement('div');
       el.className = 'g-item';
       el.dataset.cat = w.cat;
-      el.style.gridColumn = `span ${layout.col}`;
-      // grid-row height is now auto, driven by image natural ratio
+      el.style.gridColumn = `span 4`; // 默认值，图片加载后更新
+
       el.innerHTML = `
         <div class="g-inner">
           <div class="${imgClass}">${imgHtml}</div>
@@ -820,7 +816,24 @@
           </div>
         </div>
         <span class="g-num">${String(i+1).padStart(2,'0')}</span>`;
+
       grid.appendChild(el);
+
+      // 图片加载后根据实际比例更新列宽
+      if (w.img) {
+        const img = el.querySelector('img');
+        const applyRatio = () => {
+          const ratio = img.naturalWidth / img.naturalHeight;
+          el.style.gridColumn = `span ${getColSpan(ratio)}`;
+        };
+        if (img.complete && img.naturalWidth) {
+          applyRatio();
+        } else {
+          img.addEventListener('load', applyRatio);
+        }
+      } else {
+        el.style.gridColumn = `span 4`;
+      }
     });
   }
   buildGallery();
