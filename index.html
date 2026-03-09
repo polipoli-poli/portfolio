@@ -409,6 +409,8 @@
     .g-img img{
       width:100%; height:auto;
       display:block;
+      padding:6px;
+      box-sizing:border-box;
       transition:transform .5s ease;
     }
     .g-item:hover .g-img img{ transform:scale(1.03); }
@@ -756,15 +758,15 @@
                留空时显示占位背景
      ════════════════════════════════════════ */
   const ARTWORKS = [
-    { title:'角色设计', detail:'2025 · 原创', cat:'original',   img:'images/20240710.jpg' },
-    { title:'炼金术士', detail:'2024 · 同人插画', cat:'fanart', img:'images/20241018.png' },
-    { title:'生日快乐', detail:'2024 · 同人插画', cat:'fanart',   img:'images/20241026.png' },
-    { title:'群像', detail:'2024 · 同人插画',     cat:'fanart', img:'images/20241030.png' },
-    { title:'角色设计', detail:'2024 · 原创', cat:'original',   img:'images/20241108.png' },
-    { title:'魔术师', detail:'2023 · 同人插画', cat:'fanart', img:'images/20241201.jpg' },
-    { title:'作品标题七', detail:'2023 · 同人插画', cat:'fanart',   img:'images/20250227.png' },
+    { title:'冬日', detail:'2024 · 同人插画', cat:'fanart',   img:'images/20241201.jpg' },
+    { title:'炼金术士', detail:'2024 · 同人插画', cat:'fanart', img:'images/20241115.jpg' },
+    { title:'生日快乐', detail:'2024 · 同人插画', cat:'fanart',   img:'images/20241020.jpg' },
+    { title:'群像', detail:'2024 · 同人插画',     cat:'fanart', img:'images/20240815.jpg' },
+    { title:'角色设计', detail:'2024 · 原创', cat:'original',   img:'images/20240601.png' },
+    { title:'魔术师', detail:'2023 · 同人插画', cat:'fanart', img:'images/20231210.jpg' },
+    { title:'作品标题七', detail:'2023 · 同人插画', cat:'fanart',   img:'' },
     { title:'作品标题八', detail:'2023 · 原创',     cat:'original', img:'' },
-    // ← 在这里继续添加，img 路径格式：'images/你的文件名.jpg'
+    // ← 在这里继续添加，img 路径格式：'images/20250101.jpg'
   ];
 
   /* 错落布局 pattern — 每8格一循环，col/row span值 */
