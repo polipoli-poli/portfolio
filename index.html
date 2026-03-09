@@ -4,119 +4,157 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>YourName · Portfolio</title>
-  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cinzel:wght@400;600&family=Noto+Serif+SC:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cinzel:wght@400;600&family=Noto+Serif+SC:wght@300;400;600&family=Noto+Serif+JP:wght@300;400;600&display=swap" rel="stylesheet"/>
   <style>
     :root {
-      --blue:       #a8c8e0;
-      --blue-deep:  #5a8aaa;
-      --blue-pale:  #dbeef8;
-      --cream:      #f8f3ea;
-      --cream-warm: #f0e9d6;
-      --navy:       #1e2d4a;
-      --red:        #b83030;
-      --red-soft:   #e8a09a;
-      --ink:        #2a2a3e;
+      --blue:      #a8c8e0;
+      --blue-deep: #5a8aaa;
+      --blue-pale: #dbeef8;
+      --cream:     #f8f3ea;
+      --cream-warm:#f0e9d6;
+      --navy:      #1e2d4a;
+      --red:       #b83030;
+      --red-soft:  #e8a09a;
+      --ink:       #2a2a3e;
     }
+
+    /* ── SVG patterns as data URIs ── */
+    /* tall diamond (argyle): width=80 height=120, polygon 40,0 80,60 40,120 0,60 */
+    --dia-blue: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='120'%3E%3Cpolygon points='40,0 80,60 40,120 0,60' fill='%23a8c8e0' opacity='0.65'/%3E%3C/svg%3E");
+    --dia-blue-pale: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='120'%3E%3Cpolygon points='40,0 80,60 40,120 0,60' fill='%23a8c8e0' opacity='0.22'/%3E%3C/svg%3E");
+    --dia-navy: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='120'%3E%3Cpolygon points='40,0 80,60 40,120 0,60' fill='%235a8aaa' opacity='0.35'/%3E%3C/svg%3E");
 
     * { margin:0; padding:0; box-sizing:border-box; }
     html { scroll-behavior:smooth; }
     body {
       background:var(--cream); color:var(--ink);
-      font-family:'IM Fell English',serif;
+      font-family:'IM Fell English', serif;
       cursor:none; overflow-x:hidden;
     }
 
-    /* ── SPADE CURSOR ── */
-    .cursor-spade {
-      width:26px; height:26px;
+    /* ═══════════════════════════════════
+       ELEGANT SPADE CURSOR
+       Based on classical playing card design
+    ═══════════════════════════════════ */
+    #cur-spade {
       position:fixed; pointer-events:none; z-index:9999;
-      transform:translate(-50%,-50%);
-      transition:transform 0.15s;
+      width:32px; height:32px;
+      transform:translate(-4px, -2px); /* optical center */
+      transition:transform .12s, filter .2s;
+      filter: drop-shadow(1px 2px 2px rgba(30,45,74,0.25));
     }
-    .cursor-ring {
-      width:40px; height:40px;
-      border:1px solid var(--blue-deep); border-radius:50%;
+    #cur-trail {
       position:fixed; pointer-events:none; z-index:9998;
+      width:44px; height:44px; border-radius:50%;
+      border:1.5px solid var(--blue-deep);
       transform:translate(-50%,-50%);
-      transition:all 0.35s cubic-bezier(.25,.46,.45,.94);
-      opacity:0.4;
+      transition:all .38s cubic-bezier(.25,.46,.45,.94);
+      opacity:.35;
     }
 
-    /* ══════════════════════════════════════════
-       💠 TALL POINTED DIAMOND CHECKER
-       Uses SVG background for true elongated diamonds
-    ══════════════════════════════════════════ */
-    .dia-bg {
-      background-color: var(--blue-pale);
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='120'%3E%3Cpolygon points='40,0 80,60 40,120 0,60' fill='%23a8c8e0' opacity='0.7'/%3E%3C/svg%3E");
-      background-size: 80px 120px;
-    }
-    .dia-bg-alt {
-      background-color: var(--cream);
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='120'%3E%3Cpolygon points='40,0 80,60 40,120 0,60' fill='%23a8c8e0' opacity='0.22'/%3E%3C/svg%3E");
-      background-size: 80px 120px;
-    }
-    .dia-bg-navy {
-      background-color: var(--navy);
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='120'%3E%3Cpolygon points='40,0 80,60 40,120 0,60' fill='%235a8aaa' opacity='0.35'/%3E%3C/svg%3E");
-      background-size: 80px 120px;
-    }
-    /* stripe dividers with tall diamonds */
-    .dia-stripe {
-      height:24px; overflow:hidden;
-      background-color: var(--cream);
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='24'%3E%3Cpolygon points='20,0 40,12 20,24 0,12' fill='%23a8c8e0' opacity='0.6'/%3E%3C/svg%3E");
-      background-size: 40px 24px;
-    }
-    .dia-stripe-dark {
-      height:24px; overflow:hidden;
-      background-color: var(--navy);
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='24'%3E%3Cpolygon points='20,0 40,12 20,24 0,12' fill='%235a8aaa' opacity='0.4'/%3E%3C/svg%3E");
-      background-size: 40px 24px;
-    }
-
-    /* ── NAV ── */
-    nav {
-      position:fixed; top:0; left:0; right:0; z-index:100;
-      height:62px; padding:0 3rem;
-      display:flex; align-items:center; justify-content:space-between;
-    }
-    nav::before {
-      content:''; position:absolute; inset:0;
-      background:rgba(248,243,234,0.94); backdrop-filter:blur(12px);
-      border-bottom:1.5px solid var(--blue); z-index:-1;
-    }
-    /* top diamond stripe */
-    nav::after {
-      content:''; position:absolute; top:0; left:0; right:0; height:6px; overflow:hidden;
+    /* ═══════════════════════════════════
+       TALL ARGYLE DIAMOND HELPERS
+    ═══════════════════════════════════ */
+    .argyle {
       background-color:var(--blue-pale);
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='6'%3E%3Cpolygon points='12,0 24,3 12,6 0,3' fill='%235a8aaa' opacity='0.7'/%3E%3C/svg%3E");
-      background-size: 24px 6px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='120'%3E%3Cpolygon points='40,0 80,60 40,120 0,60' fill='%23a8c8e0' opacity='0.65'/%3E%3C/svg%3E");
+      background-size:80px 120px;
+    }
+    .argyle-faint {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='120'%3E%3Cpolygon points='40,0 80,60 40,120 0,60' fill='%23a8c8e0' opacity='0.2'/%3E%3C/svg%3E");
+      background-size:80px 120px;
+    }
+    .argyle-navy {
+      background-color:var(--navy);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='120'%3E%3Cpolygon points='40,0 80,60 40,120 0,60' fill='%235a8aaa' opacity='0.32'/%3E%3C/svg%3E");
+      background-size:80px 120px;
+    }
+
+    /* ═══════════════════════════════════
+       DIVIDER STRIPE — centered on boundary
+       negative margin pulls it to overlap both sections
+    ═══════════════════════════════════ */
+    /* Diamond divider.
+    /* ── Section dividers ──
+       Each bar is colored with the NEXT section's background.
+       It overlaps the previous section by its full height via margin-top:-Npx.
+       clip-path cuts diamond (argyle) tips pointing UPWARD into the previous section.
+       No background mismatch — the bar IS the next section's color, gaps disappear. */
+
+    /* 40px tall diamonds, 80px wide each — pointing up */
+    .div-to-cream {
+      height:40px; position:relative; z-index:10; margin-top:-40px;
+      background: var(--cream);
+      -webkit-clip-path: polygon(0% 100%, 2.5% 0%, 5% 100%, 7.5% 0%, 10% 100%, 12.5% 0%, 15% 100%, 17.5% 0%, 20% 100%, 22.5% 0%, 25% 100%, 27.5% 0%, 30% 100%, 32.5% 0%, 35% 100%, 37.5% 0%, 40% 100%, 42.5% 0%, 45% 100%, 47.5% 0%, 50% 100%, 52.5% 0%, 55% 100%, 57.5% 0%, 60% 100%, 62.5% 0%, 65% 100%, 67.5% 0%, 70% 100%, 72.5% 0%, 75% 100%, 77.5% 0%, 80% 100%, 82.5% 0%, 85% 100%, 87.5% 0%, 90% 100%, 92.5% 0%, 95% 100%, 97.5% 0%, 100% 100%);
+      clip-path: polygon(0% 100%, 2.5% 0%, 5% 100%, 7.5% 0%, 10% 100%, 12.5% 0%, 15% 100%, 17.5% 0%, 20% 100%, 22.5% 0%, 25% 100%, 27.5% 0%, 30% 100%, 32.5% 0%, 35% 100%, 37.5% 0%, 40% 100%, 42.5% 0%, 45% 100%, 47.5% 0%, 50% 100%, 52.5% 0%, 55% 100%, 57.5% 0%, 60% 100%, 62.5% 0%, 65% 100%, 67.5% 0%, 70% 100%, 72.5% 0%, 75% 100%, 77.5% 0%, 80% 100%, 82.5% 0%, 85% 100%, 87.5% 0%, 90% 100%, 92.5% 0%, 95% 100%, 97.5% 0%, 100% 100%);
+      pointer-events:none;
+    }
+    .div-to-warm {
+      height:40px; position:relative; z-index:10; margin-top:-40px;
+      background: var(--cream-warm);
+      -webkit-clip-path: polygon(0% 100%, 2.5% 0%, 5% 100%, 7.5% 0%, 10% 100%, 12.5% 0%, 15% 100%, 17.5% 0%, 20% 100%, 22.5% 0%, 25% 100%, 27.5% 0%, 30% 100%, 32.5% 0%, 35% 100%, 37.5% 0%, 40% 100%, 42.5% 0%, 45% 100%, 47.5% 0%, 50% 100%, 52.5% 0%, 55% 100%, 57.5% 0%, 60% 100%, 62.5% 0%, 65% 100%, 67.5% 0%, 70% 100%, 72.5% 0%, 75% 100%, 77.5% 0%, 80% 100%, 82.5% 0%, 85% 100%, 87.5% 0%, 90% 100%, 92.5% 0%, 95% 100%, 97.5% 0%, 100% 100%);
+      clip-path: polygon(0% 100%, 2.5% 0%, 5% 100%, 7.5% 0%, 10% 100%, 12.5% 0%, 15% 100%, 17.5% 0%, 20% 100%, 22.5% 0%, 25% 100%, 27.5% 0%, 30% 100%, 32.5% 0%, 35% 100%, 37.5% 0%, 40% 100%, 42.5% 0%, 45% 100%, 47.5% 0%, 50% 100%, 52.5% 0%, 55% 100%, 57.5% 0%, 60% 100%, 62.5% 0%, 65% 100%, 67.5% 0%, 70% 100%, 72.5% 0%, 75% 100%, 77.5% 0%, 80% 100%, 82.5% 0%, 85% 100%, 87.5% 0%, 90% 100%, 92.5% 0%, 95% 100%, 97.5% 0%, 100% 100%);
+      pointer-events:none;
+    }
+    .div-to-navy {
+      height:40px; position:relative; z-index:10; margin-top:-40px;
+      background: var(--navy);
+      -webkit-clip-path: polygon(0% 100%, 2.5% 0%, 5% 100%, 7.5% 0%, 10% 100%, 12.5% 0%, 15% 100%, 17.5% 0%, 20% 100%, 22.5% 0%, 25% 100%, 27.5% 0%, 30% 100%, 32.5% 0%, 35% 100%, 37.5% 0%, 40% 100%, 42.5% 0%, 45% 100%, 47.5% 0%, 50% 100%, 52.5% 0%, 55% 100%, 57.5% 0%, 60% 100%, 62.5% 0%, 65% 100%, 67.5% 0%, 70% 100%, 72.5% 0%, 75% 100%, 77.5% 0%, 80% 100%, 82.5% 0%, 85% 100%, 87.5% 0%, 90% 100%, 92.5% 0%, 95% 100%, 97.5% 0%, 100% 100%);
+      clip-path: polygon(0% 100%, 2.5% 0%, 5% 100%, 7.5% 0%, 10% 100%, 12.5% 0%, 15% 100%, 17.5% 0%, 20% 100%, 22.5% 0%, 25% 100%, 27.5% 0%, 30% 100%, 32.5% 0%, 35% 100%, 37.5% 0%, 40% 100%, 42.5% 0%, 45% 100%, 47.5% 0%, 50% 100%, 52.5% 0%, 55% 100%, 57.5% 0%, 60% 100%, 62.5% 0%, 65% 100%, 67.5% 0%, 70% 100%, 72.5% 0%, 75% 100%, 77.5% 0%, 80% 100%, 82.5% 0%, 85% 100%, 87.5% 0%, 90% 100%, 92.5% 0%, 95% 100%, 97.5% 0%, 100% 100%);
+      pointer-events:none;
+    }
+
+    /* ═══════════════════════════════════
+       NAV — navy background, white text
+    ═══════════════════════════════════ */
+    nav {
+      position:fixed; top:0; left:0; right:0; z-index:200;
+      height:60px; padding:0 3rem;
+      background:var(--navy);
+      display:flex; align-items:center; justify-content:space-between;
+      box-shadow:0 2px 20px rgba(30,45,74,.4);
     }
     .nav-logo {
       font-family:'Cinzel',serif; font-size:1.05rem; font-weight:600;
-      color:var(--navy); text-decoration:none; letter-spacing:.1em;
+      color:#fff; text-decoration:none; letter-spacing:.1em;
       display:flex; align-items:center; gap:.5rem;
     }
-    /* Playing card suits in nav logo */
-    .nav-suits { font-size:.75rem; letter-spacing:.05em; }
-    .nav-suits .s { color:var(--navy); }
-    .nav-suits .h { color:var(--red); }
-    .nav-suits .d { color:var(--red); }
-    .nav-suits .c { color:var(--navy); }
-    .nav-links { display:flex; gap:2rem; list-style:none; }
+    .nav-suits { font-size:.78rem; letter-spacing:.04em; }
+    .nav-suits .s,.nav-suits .c { color:rgba(255,255,255,.85); }
+    .nav-suits .h,.nav-suits .d { color:var(--red-soft); }
+    .nav-links { display:flex; gap:2rem; list-style:none; align-items:center; }
     .nav-links a {
-      font-family:'Cinzel',serif; font-size:.7rem; letter-spacing:.15em;
-      color:var(--navy); text-decoration:none; position:relative; transition:color .2s;
+      font-family:'Cinzel',serif; font-size:.68rem; letter-spacing:.15em;
+      color:rgba(255,255,255,.75); text-decoration:none;
+      position:relative; transition:color .2s;
     }
     .nav-links a::after {
       content:''; position:absolute; bottom:-3px; left:0;
-      width:0; height:1px; background:var(--red); transition:width .25s;
+      width:0; height:1px; background:var(--red-soft); transition:width .25s;
     }
-    .nav-links a:hover { color:var(--red); }
+    .nav-links a:hover { color:#fff; }
     .nav-links a:hover::after { width:100%; }
 
-    /* ── HERO ── */
+    /* language switcher */
+    .lang-switcher {
+      display:flex; gap:.3rem; margin-left:1.5rem;
+      border-left:1px solid rgba(255,255,255,.2); padding-left:1.5rem;
+    }
+    .lang-btn {
+      font-family:'Cinzel',serif; font-size:.58rem; letter-spacing:.1em;
+      padding:.28rem .65rem;
+      background:transparent; border:1px solid rgba(255,255,255,.3);
+      color:rgba(255,255,255,.55); cursor:none; transition:all .2s;
+    }
+    .lang-btn.active {
+      background:rgba(255,255,255,.15); border-color:rgba(255,255,255,.6);
+      color:#fff;
+    }
+    .lang-btn:hover { color:#fff; border-color:var(--red-soft); }
+
+    /* ═══════════════════════════════════
+       HERO
+    ═══════════════════════════════════ */
     #home {
       min-height:100vh;
       display:grid; grid-template-columns:1fr 1fr;
@@ -127,73 +165,74 @@
       display:flex; flex-direction:column; justify-content:center;
       padding:8rem 4rem 4rem; position:relative; overflow:hidden;
     }
-    /* faint tall diamond watermark */
+    /* very faint argyle watermark on cream side */
     .hero-left::before {
-      content:''; position:absolute; inset:0; pointer-events:none; opacity:.6;
+      content:''; position:absolute; inset:0; pointer-events:none;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='120'%3E%3Cpolygon points='40,0 80,60 40,120 0,60' fill='%23a8c8e0' opacity='0.1'/%3E%3C/svg%3E");
-      background-size: 80px 120px;
+      background-size:80px 120px;
     }
+
     /* floating suit symbols */
-    .hero-suits { position:absolute; inset:0; overflow:hidden; pointer-events:none; }
-    .hero-suits span {
-      position:absolute; font-size:1.2rem; opacity:.06;
-      animation:floatSuit linear infinite;
+    .hero-floats { position:absolute; inset:0; overflow:hidden; pointer-events:none; }
+    .hero-floats span {
+      position:absolute; opacity:.05; animation:floatUp linear infinite;
     }
-    .hero-suits span:nth-child(1){left:8%;top:15%;animation-duration:14s;content:'♠';}
-    .hero-suits span:nth-child(2){left:20%;top:60%;animation-duration:18s;animation-delay:2s;font-size:.9rem;}
-    .hero-suits span:nth-child(3){left:65%;top:20%;animation-duration:11s;animation-delay:1s;font-size:1.5rem;}
-    .hero-suits span:nth-child(4){left:80%;top:70%;animation-duration:16s;animation-delay:3s;font-size:.8rem;}
-    .hero-suits span:nth-child(5){left:45%;top:80%;animation-duration:13s;animation-delay:.5s;}
-    @keyframes floatSuit {
-      0%  {transform:translateY(0) rotate(0deg);  opacity:.06;}
-      50% {opacity:.14;}
-      100%{transform:translateY(-50px) rotate(10deg);opacity:.06;}
+    .hero-floats span:nth-child(1){left:7%;top:18%;font-size:1.4rem;animation-duration:14s;}
+    .hero-floats span:nth-child(2){left:18%;top:58%;font-size:.9rem;animation-duration:18s;animation-delay:2s;}
+    .hero-floats span:nth-child(3){left:62%;top:22%;font-size:1.8rem;animation-duration:11s;animation-delay:1s;}
+    .hero-floats span:nth-child(4){left:78%;top:68%;font-size:.8rem;animation-duration:16s;animation-delay:3s;}
+    .hero-floats span:nth-child(5){left:42%;top:78%;font-size:1.1rem;animation-duration:13s;animation-delay:.5s;}
+    @keyframes floatUp {
+      0%  {transform:translateY(0)   rotate(-5deg);opacity:.05;}
+      50% {opacity:.13;}
+      100%{transform:translateY(-55px) rotate(5deg);opacity:.05;}
     }
-    .hero-eyebrow {
-      font-family:'Cinzel',serif; font-size:.62rem; letter-spacing:.28em;
+
+    /* text */
+    .hero-label {
+      font-family:'Cinzel',serif; font-size:.6rem; letter-spacing:.28em;
       color:var(--blue-deep); margin-bottom:1.4rem;
       display:flex; align-items:center; gap:.8rem;
       opacity:0; animation:fadeUp .8s .3s forwards;
     }
-    .hero-eyebrow::before,.hero-eyebrow::after{content:'';flex:1;height:1px;background:var(--blue);}
+    .hero-label::before,.hero-label::after{content:'';flex:1;height:1px;background:var(--blue);}
+
     .hero-title {
       font-family:'Cinzel',serif;
-      font-size:clamp(2.8rem,4.5vw,5rem); font-weight:600;
-      color:var(--navy); line-height:1.1; margin-bottom:.5rem;
+      font-size:clamp(2.6rem,4.5vw,5rem); font-weight:600;
+      color:var(--navy); line-height:1.1; margin-bottom:.4rem;
       opacity:0; animation:fadeUp .8s .5s forwards;
     }
     .hero-sub {
-      font-family:'Noto Serif SC',serif; font-size:.95rem; font-weight:300;
-      color:var(--blue-deep); letter-spacing:.28em; margin-bottom:1.5rem;
+      font-family:'Noto Serif SC',serif; font-size:.92rem; font-weight:300;
+      color:var(--blue-deep); letter-spacing:.3em; margin-bottom:1.4rem;
       opacity:0; animation:fadeUp .8s .65s forwards;
     }
-    /* Suit row decoration */
-    .hero-suit-row {
-      display:flex; gap:1rem; margin-bottom:1.5rem;
-      opacity:0; animation:fadeUp .8s .75s forwards;
+    .hero-suits-row {
+      display:flex; gap:.9rem; margin-bottom:1.5rem;
+      opacity:0; animation:fadeUp .8s .75s forwards; font-size:1rem;
     }
-    .hero-suit-row span { font-size:1.1rem; }
-    .hero-suit-row .red { color:var(--red); }
-    .hero-suit-row .dark { color:var(--navy); opacity:.6; }
+    .hero-suits-row .r{color:var(--red);}
+    .hero-suits-row .d{color:var(--navy);opacity:.55;}
     .hero-quote {
-      font-style:italic; font-size:.88rem; color:#6a6a8a; line-height:1.95;
+      font-style:italic; font-size:.86rem; color:#6a6a8a; line-height:2;
       border-left:2px solid var(--red);
-      padding-left:1.2rem; margin-bottom:2.5rem; max-width:340px;
+      padding-left:1.2rem; margin-bottom:2.5rem; max-width:360px;
       opacity:0; animation:fadeUp .8s .85s forwards;
     }
     .hero-btn {
-      display:inline-flex; align-items:center; gap:.8rem;
-      padding:.8rem 1.8rem; background:var(--navy); color:var(--cream);
+      display:inline-flex; align-items:center; gap:.7rem;
+      padding:.8rem 2rem; background:var(--navy); color:var(--cream);
       text-decoration:none; font-family:'Cinzel',serif;
-      font-size:.7rem; letter-spacing:.15em;
+      font-size:.68rem; letter-spacing:.15em;
       transition:all .3s; width:fit-content;
       opacity:0; animation:fadeUp .8s .95s forwards;
     }
     .hero-btn:hover{background:var(--blue-deep);transform:translateY(-2px);}
-    .btn-spade { font-size:.8rem; transition:transform .3s; }
-    .hero-btn:hover .btn-spade { transform:rotate(20deg) scale(1.2); }
+    .btn-suit{transition:transform .3s;}
+    .hero-btn:hover .btn-suit{transform:rotate(20deg) scale(1.2);}
 
-    /* RIGHT: tall diamond checker bg */
+    /* right: full argyle */
     .hero-right {
       position:relative; overflow:hidden;
       display:flex; align-items:center; justify-content:center;
@@ -202,86 +241,125 @@
       position:absolute; inset:0;
       background-color:var(--blue-pale);
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='120'%3E%3Cpolygon points='40,0 80,60 40,120 0,60' fill='%23a8c8e0' opacity='0.65'/%3E%3C/svg%3E");
-      background-size: 80px 120px;
-    }
-    /* vertical diamond stripe divider */
-    .hero-divider {
-      position:absolute; top:0; bottom:0; left:50%; width:6px; z-index:5; overflow:hidden;
-      background-color:var(--cream);
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='12'%3E%3Cpolygon points='3,0 6,6 3,12 0,6' fill='%231e2d4a' opacity='0.5'/%3E%3C/svg%3E");
-      background-size: 6px 12px;
+      background-size:80px 120px;
     }
 
-    /* ── CARD FRAME ── */
-    .card-frame {
-      position:relative; background:var(--cream);
-      border:1.5px solid var(--navy); box-shadow:6px 6px 0 var(--blue);
+    /* solid white divider between hero halves */
+    .hero-fade-divider {
+      position:absolute; top:0; bottom:0; left:50%;
+      width:3px; transform:translateX(-50%);
+      background: #fff;
+      z-index:5; pointer-events:none;
     }
-    .card-frame::before {
-      content:''; position:absolute; inset:7px;
-      border:1px solid var(--blue-deep); pointer-events:none; z-index:1;
-    }
-    .card-corner {
-      position:absolute; font-family:'Cinzel',serif;
-      font-size:.6rem; line-height:1; z-index:2; pointer-events:none;
-    }
-    .card-corner.red { color:var(--red); }
-    .card-corner.dark { color:var(--navy); opacity:.6; }
-    .card-corner.tl{top:10px;left:10px;}
-    .card-corner.tr{top:10px;right:10px;}
-    .card-corner.bl{bottom:10px;left:10px;}
-    .card-corner.br{bottom:10px;right:10px;}
 
+    /* hero card */
     .hero-card {
-      width:min(320px,80%); aspect-ratio:3/4;
-      position:relative; z-index:1;
-      display:flex; align-items:center; justify-content:center;
+      width:min(300px,78%); aspect-ratio:3/4;
+      position:relative; z-index:6;
+      background:var(--cream);
+      border:1.5px solid var(--navy);
+      box-shadow:7px 7px 0 rgba(90,138,170,.55);
+      overflow:hidden;
       opacity:0; animation:fadeIn 1s .6s forwards;
     }
-    .hero-card-inner{text-align:center;padding:2rem;position:relative;z-index:2;}
-    .hero-card-inner p{
-      font-family:'Noto Serif SC',serif; font-size:.78rem;
-      color:var(--blue-deep); letter-spacing:.15em; line-height:2;
+    .hero-card::before{
+      content:''; position:absolute; inset:8px;
+      border:1px solid var(--blue-deep); z-index:3; pointer-events:none;
     }
-    .card-dia-ornament{
-      width:32px; height:50px;
-      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 50'%3E%3Cpolygon points='16,0 32,25 16,50 0,25' fill='none' stroke='%235a8aaa' stroke-width='1.5'/%3E%3Ccircle cx='16' cy='25' r='5' fill='%23e8a09a'/%3E%3C/svg%3E") center/contain no-repeat;
-      margin:0 auto 1.2rem;
+    .c-corner{
+      position:absolute; font-size:.6rem; z-index:4; line-height:1; pointer-events:none;
+    }
+    .c-corner.tl{top:10px;left:10px;}
+    .c-corner.tr{top:10px;right:10px;}
+    .c-corner.bl{bottom:10px;left:10px;}
+    .c-corner.br{bottom:10px;right:10px;}
+    .c-corner.r{color:var(--red);}
+    .c-corner.k{color:var(--navy);opacity:.55;}
+
+    /* ── Slideshow ── */
+    .slide-track {
+      display:flex; width:100%; height:100%;
+      transition:transform .6s cubic-bezier(.4,0,.2,1);
+    }
+    .slide {
+      min-width:100%; height:100%;
+      background:var(--blue-pale);
+      background-size:cover; background-position:center;
+      display:flex; align-items:center; justify-content:center;
+      position:relative;
+    }
+    /* placeholder argyle when no image */
+    .slide-placeholder {
+      background-color:var(--blue-pale);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='120'%3E%3Cpolygon points='40,0 80,60 40,120 0,60' fill='%23a8c8e0' opacity='0.5'/%3E%3C/svg%3E");
+      background-size:80px 120px;
     }
 
+    /* prev/next arrows */
+    .slide-btn {
+      position:absolute; top:50%; z-index:5;
+      transform:translateY(-50%);
+      background:rgba(248,243,234,.75); border:1px solid var(--navy);
+      width:26px; height:26px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:.65rem; color:var(--navy);
+      cursor:none; transition:background .2s;
+      backdrop-filter:blur(4px);
+    }
+    .slide-btn:hover{background:rgba(248,243,234,.95);}
+    .slide-btn.prev{left:12px;}
+    .slide-btn.next{right:12px;}
+    /* dot indicators */
+    .slide-dots {
+      position:absolute; bottom:10px; left:50%; transform:translateX(-50%);
+      display:flex; gap:5px; z-index:5;
+    }
+    .slide-dot {
+      width:5px; height:5px; border-radius:50%;
+      background:rgba(255,255,255,.5); border:1px solid rgba(255,255,255,.7);
+      cursor:none; transition:background .2s, transform .2s;
+    }
+    .slide-dot.active{background:#fff; transform:scale(1.3);}
+
+    /* scroll indicator */
     .hero-scroll{
       position:absolute; bottom:2.5rem; left:50%;
       transform:translateX(-50%); z-index:10;
       display:flex; flex-direction:column; align-items:center; gap:.4rem;
-      opacity:0; animation:fadeIn 1s 1.6s forwards;
+      opacity:0; animation:fadeIn 1s 1.8s forwards;
     }
-    .hero-scroll span{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.2em;color:var(--blue-deep);}
-    .scroll-suits{display:flex;flex-direction:column;align-items:center;gap:2px;}
-    .scroll-suits i{font-size:.55rem;color:var(--blue-deep);font-style:normal;animation:blink 1.5s ease-in-out infinite;}
-    .scroll-suits i:nth-child(2){animation-delay:.3s;opacity:.6;}
-    .scroll-suits i:nth-child(3){animation-delay:.6s;opacity:.3;}
+    .hero-scroll span{font-family:'Cinzel',serif;font-size:.56rem;letter-spacing:.22em;color:var(--blue-deep);}
+    .scroll-gems{display:flex;flex-direction:column;align-items:center;gap:3px;margin-top:2px;}
+    .scroll-gems i{font-size:.5rem;color:var(--blue-deep);font-style:normal;animation:blink 1.5s ease-in-out infinite;}
+    .scroll-gems i:nth-child(2){animation-delay:.3s;opacity:.6;}
+    .scroll-gems i:nth-child(3){animation-delay:.6s;opacity:.3;}
     @keyframes blink{0%,100%{opacity:.2}50%{opacity:1}}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
     @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
-    /* ── SHARED ── */
-    .sec-eyebrow{
-      font-family:'Cinzel',serif; font-size:.62rem; letter-spacing:.25em;
-      color:var(--blue-deep); display:flex; align-items:center; gap:.7rem; margin-bottom:.7rem;
+    /* ═══════════════════════════════════
+       SHARED
+    ═══════════════════════════════════ */
+    .sec-eye{
+      font-family:'Cinzel',serif; font-size:.6rem; letter-spacing:.25em;
+      color:var(--blue-deep); display:flex; align-items:center; gap:.6rem; margin-bottom:.6rem;
     }
-    .e-suit{color:var(--red);font-size:.8rem;}
+    .e-suit{font-size:.75rem;}
+    .e-suit.r{color:var(--red);}
     .sec-title{
-      font-family:'Cinzel',serif; font-size:clamp(1.8rem,3vw,2.5rem);
-      font-weight:600; color:var(--navy); line-height:1.2;
+      font-family:'Cinzel',serif; font-size:clamp(1.8rem,3vw,2.6rem);
+      font-weight:600; color:var(--navy); line-height:1.2; margin-bottom:1.8rem;
     }
 
-    /* ── GALLERY ── */
-    #gallery{padding:6rem 3rem; background:var(--cream); position:relative;}
-    .gallery-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:2.5rem;}
-    .gallery-filters{display:flex;gap:.5rem;}
+    /* ═══════════════════════════════════
+       GALLERY
+    ═══════════════════════════════════ */
+    #gallery{padding:6rem 3rem 5rem; background:var(--cream); position:relative; z-index:1;}
+    .gallery-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:2.5rem;}
+    .filter-row{display:flex;gap:.5rem;}
     .filter-btn{
-      padding:.38rem 1.1rem; font-family:'Cinzel',serif;
-      font-size:.62rem; letter-spacing:.12em;
+      padding:.36rem 1.1rem; font-family:'Cinzel',serif;
+      font-size:.6rem; letter-spacing:.1em;
       border:1.5px solid var(--navy); background:transparent; color:var(--navy);
       cursor:none; transition:all .2s;
     }
@@ -291,15 +369,8 @@
       display:grid; grid-template-columns:repeat(12,1fr);
       grid-auto-rows:70px; gap:14px;
     }
-    .g-item{position:relative; overflow:visible; cursor:none;}
-    .g-item:nth-child(1){grid-column:span 5;grid-row:span 6;}
-    .g-item:nth-child(2){grid-column:span 4;grid-row:span 4;}
-    .g-item:nth-child(3){grid-column:span 3;grid-row:span 4;}
-    .g-item:nth-child(4){grid-column:span 3;grid-row:span 5;}
-    .g-item:nth-child(5){grid-column:span 4;grid-row:span 5;}
-    .g-item:nth-child(6){grid-column:span 5;grid-row:span 5;}
-    .g-item:nth-child(7){grid-column:span 4;grid-row:span 4;}
-    .g-item:nth-child(8){grid-column:span 4;grid-row:span 4;}
+    .g-item{position:relative; overflow:visible; cursor:none; transition:opacity .35s, transform .35s;}
+    .g-item.hidden{opacity:0;pointer-events:none;transform:scale(.96);}
 
     .g-inner{
       position:relative; width:100%; height:100%;
@@ -310,78 +381,68 @@
     }
     .g-inner::before{
       content:''; position:absolute; inset:7px;
-      border:1px solid rgba(90,138,170,0.5);
-      pointer-events:none; z-index:3;
+      border:1px solid rgba(90,138,170,.45); pointer-events:none; z-index:3;
     }
-    .g-item:hover .g-inner{
-      transform:translate(-2px,-2px);
-      box-shadow:8px 8px 0 var(--blue-deep);
-    }
-    /* suit corners on each card */
-    .g-corner{
-      position:absolute; font-size:.55rem; line-height:1; z-index:4; pointer-events:none;
-    }
-    .g-corner.tl{top:9px;left:9px;}
-    .g-corner.tr{top:9px;right:9px;}
-    .g-corner.bl{bottom:9px;left:9px;}
-    .g-corner.br{bottom:9px;right:9px;}
-    .g-corner.rc{color:var(--red);}
-    .g-corner.dk{color:var(--navy);opacity:.5;}
+    .g-item:hover .g-inner{transform:translate(-2px,-2px);box-shadow:8px 8px 0 var(--blue-deep);}
 
-    /* ── GALLERY IMAGE + FILTER EFFECT ── */
-    /* The image sits behind a color-blend overlay */
-    .g-img {
+    /* suit corners */
+    .gc{position:absolute;font-size:.52rem;line-height:1;z-index:4;pointer-events:none;}
+    .gc.tl{top:9px;left:9px;}
+    .gc.tr{top:9px;right:9px;}
+    .gc.bl{bottom:9px;left:9px;}
+    .gc.br{bottom:9px;right:9px;}
+    .gc.r{color:var(--red);}
+    .gc.k{color:var(--navy);opacity:.45;}
+
+    /* placeholder bg — argyle pattern */
+    .g-img{
       position:absolute; inset:0; z-index:1;
-      background-size:cover; background-position:center;
-      /* default: show a placeholder pattern */
-      background-color: var(--blue-pale);
+      background-color:var(--blue-pale);
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='120'%3E%3Cpolygon points='40,0 80,60 40,120 0,60' fill='%23a8c8e0' opacity='0.5'/%3E%3C/svg%3E");
-      background-size: 80px 120px;
-      transition: filter 0.5s ease;
+      background-size:80px 120px;
+      background-size:cover; background-position:center;
+      transition:filter .5s ease;
     }
-    /* Blue/cream tint overlay — active by default, fades on hover */
-    .g-tint {
-      position:absolute; inset:0; z-index:2;
-      background: linear-gradient(135deg, rgba(168,200,224,0.55) 0%, rgba(248,243,234,0.45) 100%);
-      mix-blend-mode: color;
-      transition: opacity 0.5s ease;
-      pointer-events:none;
-    }
-    .g-item:hover .g-tint { opacity:0; }
 
-    /* Info panel bottom-left, appears on hover */
-    .g-info {
-      position:absolute; bottom:0; left:0; right:0;
-      z-index:5; padding:1rem 1rem .8rem;
-      background: linear-gradient(to top, rgba(30,45,74,0.88) 60%, transparent);
+    /* COLOR TINT OVERLAY — blue/cream default, disappears on hover */
+    .g-tint{
+      position:absolute; inset:0; z-index:2; pointer-events:none;
+      background:linear-gradient(135deg, rgba(90,138,170,.45) 0%, rgba(248,243,234,.4) 100%);
+      mix-blend-mode:color;
+      transition:opacity .5s ease;
+    }
+    .g-item:hover .g-tint{opacity:0;}
+
+    /* Info panel — slides up from bottom-left on hover */
+    .g-info{
+      position:absolute; bottom:0; left:0; right:0; z-index:5;
+      padding:1rem 1rem .8rem;
+      background:linear-gradient(to top, rgba(30,45,74,.9) 60%, transparent);
       transform:translateY(100%);
       transition:transform .4s cubic-bezier(.25,.46,.45,.94);
     }
-    .g-item:hover .g-info { transform:translateY(0); }
-    .g-info-suit { font-size:.7rem; color:var(--red); margin-bottom:.2rem; }
-    .g-info h3 {
-      font-family:'Cinzel',serif; font-size:.88rem;
-      color:var(--cream); letter-spacing:.08em; margin-bottom:.2rem;
-    }
-    .g-info p {
-      font-size:.68rem; color:var(--blue); letter-spacing:.08em; font-style:italic;
-    }
-    .g-num{position:absolute;top:9px;right:28px;font-family:'Cinzel',serif;font-size:.5rem;color:var(--blue-deep);opacity:.45;z-index:4;}
+    .g-item:hover .g-info{transform:translateY(0);}
+    .g-info-suit{font-size:.68rem;color:var(--red-soft);margin-bottom:.18rem;}
+    .g-info h3{font-family:'Cinzel',serif;font-size:.85rem;color:var(--cream);letter-spacing:.08em;margin-bottom:.2rem;}
+    .g-info p{font-size:.65rem;color:var(--blue);letter-spacing:.07em;font-style:italic;}
 
-    /* ── ABOUT ── */
+    .g-num{position:absolute;top:9px;right:28px;font-family:'Cinzel',serif;font-size:.48rem;color:var(--blue-deep);opacity:.4;z-index:4;}
+
+    /* ═══════════════════════════════════
+       ABOUT
+    ═══════════════════════════════════ */
     #about{
-      padding:6rem 3rem; background:var(--cream-warm);
+      padding:6rem 3rem 5rem; background:var(--cream-warm);
       display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:center;
-      position:relative; overflow:hidden;
+      position:relative; z-index:1; overflow:hidden;
     }
     #about::after{
       content:''; position:absolute; bottom:-60px; right:-60px;
-      width:280px; height:400px; pointer-events:none; opacity:.5;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='120'%3E%3Cpolygon points='40,0 80,60 40,120 0,60' fill='%23a8c8e0' opacity='0.25'/%3E%3C/svg%3E");
-      background-size: 80px 120px;
-      transform:rotate(8deg);
+      width:280px; height:400px; pointer-events:none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='120'%3E%3Cpolygon points='40,0 80,60 40,120 0,60' fill='%23a8c8e0' opacity='0.18'/%3E%3C/svg%3E");
+      background-size:80px 120px;
     }
-    .about-portrait{position:relative;z-index:1;}
+    .about-frame-wrap{position:relative;z-index:1;}
     .about-frame{
       aspect-ratio:3/4; border:1.5px solid var(--navy); background:var(--blue-pale);
       display:flex; align-items:center; justify-content:center;
@@ -389,62 +450,67 @@
     }
     .about-frame::before{
       content:''; position:absolute; inset:0;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='120'%3E%3Cpolygon points='40,0 80,60 40,120 0,60' fill='%23a8c8e0' opacity='0.3'/%3E%3C/svg%3E");
-      background-size: 80px 120px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='120'%3E%3Cpolygon points='40,0 80,60 40,120 0,60' fill='%23a8c8e0' opacity='0.28'/%3E%3C/svg%3E");
+      background-size:80px 120px;
     }
     .about-frame::after{content:'';position:absolute;inset:10px;border:1px solid var(--blue-deep);}
     .about-frame-inner{position:relative;z-index:1;text-align:center;}
-    /* Big suit decoration in about frame */
-    .about-suits-deco {
-      font-size:2.5rem; letter-spacing:.3rem; margin-bottom:.8rem; opacity:.25;
-    }
-    .about-suits-deco .r{color:var(--red);}
-    .about-suits-deco .d{color:var(--navy);}
-    .about-frame-text{font-family:'Noto Serif SC',serif;font-size:.75rem;color:var(--blue-deep);letter-spacing:.12em;line-height:2.2;opacity:.7;}
-    /* corner ornaments */
-    .a-corner{position:absolute;z-index:2;width:18px;height:18px;}
-    .a-corner::before,.a-corner::after{content:'';position:absolute;background:var(--navy);}
-    .a-corner::before{width:100%;height:2px;top:0;left:0;}
-    .a-corner::after{width:2px;height:100%;top:0;left:0;}
-    .a-corner.tl{top:0;left:0;}
-    .a-corner.tr{top:0;right:0;transform:rotate(90deg);}
-    .a-corner.bl{bottom:0;left:0;transform:rotate(270deg);}
-    .a-corner.br{bottom:0;right:0;transform:rotate(180deg);}
-
-    /* suit badge */
+    .about-suits-big{font-size:2rem;letter-spacing:.3rem;margin-bottom:.8rem;opacity:.25;}
+    .about-suits-big .r{color:var(--red);}
+    .about-frame-txt{font-family:'Noto Serif SC',serif;font-size:.74rem;color:var(--blue-deep);letter-spacing:.12em;line-height:2.2;opacity:.65;}
+    .af-corner{position:absolute;z-index:2;width:16px;height:16px;}
+    .af-corner::before,.af-corner::after{content:'';position:absolute;background:var(--navy);}
+    .af-corner::before{width:100%;height:2px;top:0;left:0;}
+    .af-corner::after{width:2px;height:100%;top:0;left:0;}
+    .af-corner.tl{top:0;left:0;}
+    .af-corner.tr{top:0;right:0;transform:rotate(90deg);}
+    .af-corner.bl{bottom:0;left:0;transform:rotate(270deg);}
+    .af-corner.br{bottom:0;right:0;transform:rotate(180deg);}
     .about-badge{
       position:absolute; bottom:-14px; right:-14px;
-      width:86px; height:86px; background:var(--red);
+      width:80px; height:80px; background:var(--red);
       transform:rotate(45deg); display:flex; align-items:center; justify-content:center; z-index:2;
     }
-    .about-badge-inner{transform:rotate(-45deg);text-align:center;}
-    .about-badge-inner span{display:block;font-size:1.1rem;line-height:1.4;}
+    .about-badge-inner{transform:rotate(-45deg);text-align:center;font-size:1.6rem;color:#fff;}
 
-    .about-content{position:relative;z-index:1;}
-    .about-content .sec-title{margin-bottom:1.4rem;}
-    .about-text{font-size:.94rem;line-height:2;color:#3a3a5a;margin-bottom:1.1rem;}
-    .about-divider{display:flex;align-items:center;gap:.8rem;margin:1.8rem 0;}
-    .about-divider::before,.about-divider::after{content:'';flex:1;height:1px;background:var(--blue-deep);opacity:.3;}
+    .about-content p{font-size:.93rem;line-height:2;color:#3a3a5a;margin-bottom:1rem;}
+    .about-divider{display:flex;align-items:center;gap:.8rem;margin:1.6rem 0;}
+    .about-divider::before,.about-divider::after{content:'';flex:1;height:1px;background:var(--blue-deep);opacity:.25;}
     .about-divider-suits{font-size:.9rem;letter-spacing:.3rem;}
     .about-divider-suits .r{color:var(--red);}
     .about-tags{display:flex;flex-wrap:wrap;gap:.5rem;}
     .about-tag{
-      padding:.32rem 1rem; border:1.5px solid var(--navy);
-      font-family:'Cinzel',serif; font-size:.6rem; letter-spacing:.1em; color:var(--navy);
+      padding:.3rem 1rem; border:1.5px solid var(--navy);
+      font-family:'Cinzel',serif; font-size:.58rem; letter-spacing:.08em; color:var(--navy);
     }
-    .about-tag::before{content:'♦';font-size:.45rem;color:var(--red);margin-right:.4rem;}
+    .about-tag::before{content:'♦';font-size:.4rem;color:var(--red);margin-right:.4rem;}
 
-    /* ── FOOTER ── */
-    footer{background:var(--navy);}
-    .footer-inner{padding:2.5rem 3rem;display:flex;justify-content:space-between;align-items:center;}
-    .footer-logo{font-family:'Cinzel',serif;font-size:1rem;color:var(--cream);letter-spacing:.1em;text-decoration:none;display:flex;align-items:center;gap:.5rem;}
-    .footer-suits-sm{font-size:.7rem;letter-spacing:.05em;}
+    /* ═══════════════════════════════════
+       FOOTER — solid stripe on boundary + wide navy area
+    ═══════════════════════════════════ */
+    /* solid-color stripe that sits exactly on the cream/navy boundary */
+    .footer-stripe {
+      height:32px;
+      position:relative; z-index:10;
+      margin-top:0; margin-bottom:-32px;
+      background-color: var(--cream-warm);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='32'%3E%3Cpolygon points='30,0 60,16 30,32 0,16' fill='%238aafc8'/%3E%3C/svg%3E");
+      background-size:60px 32px;
+      pointer-events:none;
+    }
+    footer {
+      background:var(--navy);
+      position:relative; z-index:1;
+    }
+    .footer-inner{padding:3.5rem 3rem 3rem;display:flex;justify-content:space-between;align-items:center;}
+    .footer-logo{font-family:'Cinzel',serif;font-size:1rem;color:#fff;letter-spacing:.1em;text-decoration:none;display:flex;align-items:center;gap:.5rem;}
+    .footer-suits-sm{font-size:.72rem;letter-spacing:.04em;}
     .footer-suits-sm .r{color:var(--red-soft);}
-    .footer-suits-sm .d{color:rgba(248,243,234,.5);}
+    .footer-suits-sm .d{color:rgba(255,255,255,.4);}
     .footer-links{display:flex;gap:2rem;list-style:none;}
-    .footer-links a{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.12em;color:rgba(248,243,234,.4);text-decoration:none;transition:color .2s;}
+    .footer-links a{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.12em;color:rgba(255,255,255,.38);text-decoration:none;transition:color .2s;}
     .footer-links a:hover{color:var(--blue);}
-    .footer-copy{font-size:.62rem;color:rgba(248,243,234,.25);letter-spacing:.05em;font-style:italic;}
+    .footer-copy{font-size:.6rem;color:rgba(255,255,255,.22);letter-spacing:.04em;font-style:italic;}
 
     ::-webkit-scrollbar{width:5px;}
     ::-webkit-scrollbar-track{background:var(--cream);}
@@ -452,11 +518,12 @@
 
     @media(max-width:768px){
       #home{grid-template-columns:1fr;}
-      .hero-right{display:none;}
+      .hero-right,.hero-fade-divider{display:none;}
       .hero-left{padding:6rem 1.5rem 4rem;}
       #about{grid-template-columns:1fr;gap:3rem;}
-      .about-portrait{display:none;}
+      .about-frame-wrap{display:none;}
       nav{padding:0 1.5rem;}
+      .lang-switcher{display:none;}
       #gallery{padding:5rem 1.5rem;}
       .gallery-grid{grid-template-columns:1fr 1fr;grid-auto-rows:100px;}
       .g-item{grid-column:span 1!important;grid-row:span 2!important;}
@@ -466,265 +533,135 @@
 </head>
 <body>
 
-  <!-- Spade cursor -->
-  <div class="cursor-spade" id="cursorSpade">
-    <svg viewBox="0 0 24 28" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 1C12 1 2 8 2 14.5C2 18 4.8 20 8 19C7 21 5.8 22.5 4 24H20C18.2 22.5 17 21 16 19C19.2 20 22 18 22 14.5C22 8 12 1 12 1Z" fill="#1e2d4a"/>
-    </svg>
-  </div>
-  <div class="cursor-ring" id="cursorRing"></div>
+  <div id="cur-spade" style="position:fixed;pointer-events:none;z-index:9999;font-size:28px;line-height:1;color:#b83030;transform:translate(-50%,-50%);transition:transform .12s;text-shadow:0 2px 5px rgba(120,20,20,0.35);">♠</div>
+  <div id="cur-trail"></div>
 
-  <!-- Nav -->
+  <!-- ── Nav ── -->
   <nav>
     <a href="#home" class="nav-logo">
       <span class="nav-suits"><span class="s">♠</span><span class="h">♥</span><span class="d">♦</span><span class="c">♣</span></span>
       YourName
     </a>
     <ul class="nav-links">
-      <li><a href="#home">首页</a></li>
-      <li><a href="#gallery">作品集</a></li>
-      <li><a href="#about">关于我</a></li>
+      <li><a href="#home"    data-key="nav_home">首页</a></li>
+      <li><a href="#gallery" data-key="nav_gallery">作品集</a></li>
+      <li><a href="#about"   data-key="nav_about">关于我</a></li>
+      <li>
+        <div class="lang-switcher">
+          <button class="lang-btn active" onclick="setLang('zh-en')">中/EN</button>
+          <button class="lang-btn"        onclick="setLang('en-zh')">EN/中</button>
+          <button class="lang-btn"        onclick="setLang('ja-en')">日/EN</button>
+        </div>
+      </li>
     </ul>
   </nav>
 
-  <!-- Hero -->
+  <!-- ── Hero ── -->
   <section id="home">
     <div class="hero-left">
-      <div class="hero-suits">
+      <div class="hero-floats">
         <span>♠</span><span>♥</span><span>♦</span><span>♣</span><span>♠</span>
       </div>
-      <div class="hero-eyebrow">同人插画师</div>
+      <div class="hero-label" data-key="hero_label">同人插画师</div>
       <h1 class="hero-title">YourName</h1>
-      <p class="hero-sub">二 次 元 插 画</p>
-      <div class="hero-suit-row">
-        <span class="red">♥</span>
-        <span class="dark">♠</span>
-        <span class="red">♦</span>
-        <span class="dark">♣</span>
+      <p class="hero-sub" data-key="hero_sub">二 次 元 插 画</p>
+      <div class="hero-suits-row">
+        <span class="r">♥</span><span class="d">♠</span><span class="r">♦</span><span class="d">♣</span>
       </div>
-      <p class="hero-quote">"We're all mad here."<br><span style="font-size:.75rem;opacity:.6">— Alice in Wonderland</span></p>
-      <a href="#gallery" class="hero-btn"><span class="btn-spade">♠</span>浏览作品集</a>
+      <p class="hero-quote">
+        <span data-key="hero_quote">"We're all mad here."</span><br>
+        <span style="font-size:.74rem;opacity:.55">— Alice in Wonderland</span>
+      </p>
+      <a href="#gallery" class="hero-btn">
+        <span class="btn-suit">♠</span>
+        <span data-key="hero_btn">浏览作品集</span>
+      </a>
     </div>
     <div class="hero-right">
       <div class="hero-right-bg"></div>
-      <div class="hero-card card-frame">
-        <span class="card-corner tl red">♥</span>
-        <span class="card-corner tr dark">♠</span>
-        <span class="card-corner bl dark">♣</span>
-        <span class="card-corner br red">♦</span>
-        <div class="hero-card-inner">
-          <div class="card-dia-ornament"></div>
-          <p>在此放置<br>你的代表作</p>
+      <div class="hero-card" id="heroCard">
+        <span class="c-corner tl r">♥</span>
+        <span class="c-corner tr k">♠</span>
+        <span class="c-corner bl k">♣</span>
+        <span class="c-corner br r">♦</span>
+        <!-- ★ 轮播图片 — 修改 img src 或 background-image 即可 ★ -->
+        <div class="slide-track" id="slideTrack">
+          <div class="slide slide-placeholder"></div>
+          <div class="slide slide-placeholder"></div>
+          <div class="slide slide-placeholder"></div>
+        </div>
+        <button class="slide-btn prev" id="slidePrev">&#8249;</button>
+        <button class="slide-btn next" id="slideNext">&#8250;</button>
+        <div class="slide-dots" id="slideDots">
+          <div class="slide-dot active"></div>
+          <div class="slide-dot"></div>
+          <div class="slide-dot"></div>
         </div>
       </div>
     </div>
-    <div class="hero-divider"></div>
+    <div class="hero-fade-divider"></div>
     <div class="hero-scroll">
       <span>Scroll</span>
-      <div class="scroll-suits">
-        <i>♦</i><i>♦</i><i>♦</i>
-      </div>
+      <div class="scroll-gems"><i>♦</i><i>♦</i><i>♦</i></div>
     </div>
   </section>
 
-  <div class="dia-stripe"></div>
 
-  <!-- Gallery -->
+
+  <!-- ── Gallery ── -->
   <section id="gallery">
-    <div class="gallery-top">
+    <div class="gallery-head">
       <div>
-        <div class="sec-eyebrow"><span class="e-suit">♦</span> Portfolio</div>
-        <h2 class="sec-title">作品集</h2>
+        <div class="sec-eye"><span class="e-suit r">♦</span> <span data-key="gal_eye">Portfolio</span></div>
+        <h2 class="sec-title" data-key="gal_title">作品集</h2>
       </div>
-      <div class="gallery-filters">
-        <button class="filter-btn active">♠ 全部</button>
-        <button class="filter-btn">♥ 原创</button>
-        <button class="filter-btn">♦ 同人</button>
+      <div class="filter-row">
+        <button class="filter-btn active" data-filter="all">♠ <span data-key="fil_all">全部</span></button>
+        <button class="filter-btn" data-filter="original">♥ <span data-key="fil_orig">原创</span></button>
+        <button class="filter-btn" data-filter="fanart">♦ <span data-key="fil_fan">同人</span></button>
       </div>
     </div>
-    <div class="gallery-grid">
-
-      <div class="g-item">
-        <div class="g-inner">
-          <div class="g-img"></div>
-          <div class="g-tint"></div>
-          <span class="g-corner tl rc">♥</span>
-          <span class="g-corner tr dk">♠</span>
-          <span class="g-corner bl dk">♣</span>
-          <span class="g-corner br rc">♦</span>
-          <div class="g-info">
-            <div class="g-info-suit">♥ Fan Art</div>
-            <h3>作品标题</h3>
-            <p>2024 · 同人插画</p>
-          </div>
-        </div>
-        <span class="g-num">01</span>
-      </div>
-
-      <div class="g-item">
-        <div class="g-inner">
-          <div class="g-img"></div>
-          <div class="g-tint"></div>
-          <span class="g-corner tl dk">♠</span>
-          <span class="g-corner tr rc">♦</span>
-          <span class="g-corner bl rc">♥</span>
-          <span class="g-corner br dk">♣</span>
-          <div class="g-info">
-            <div class="g-info-suit">♦ Fan Art</div>
-            <h3>作品标题</h3>
-            <p>2024 · 同人插画</p>
-          </div>
-        </div>
-        <span class="g-num">02</span>
-      </div>
-
-      <div class="g-item">
-        <div class="g-inner">
-          <div class="g-img"></div>
-          <div class="g-tint"></div>
-          <span class="g-corner tl rc">♦</span>
-          <span class="g-corner tr dk">♣</span>
-          <span class="g-corner bl dk">♠</span>
-          <span class="g-corner br rc">♥</span>
-          <div class="g-info">
-            <div class="g-info-suit">♠ Original</div>
-            <h3>作品标题</h3>
-            <p>2024 · 原创</p>
-          </div>
-        </div>
-        <span class="g-num">03</span>
-      </div>
-
-      <div class="g-item">
-        <div class="g-inner">
-          <div class="g-img"></div>
-          <div class="g-tint"></div>
-          <span class="g-corner tl dk">♣</span>
-          <span class="g-corner tr rc">♥</span>
-          <span class="g-corner bl rc">♦</span>
-          <span class="g-corner br dk">♠</span>
-          <div class="g-info">
-            <div class="g-info-suit">♣ Fan Art</div>
-            <h3>作品标题</h3>
-            <p>2024 · 同人插画</p>
-          </div>
-        </div>
-        <span class="g-num">04</span>
-      </div>
-
-      <div class="g-item">
-        <div class="g-inner">
-          <div class="g-img"></div>
-          <div class="g-tint"></div>
-          <span class="g-corner tl rc">♥</span>
-          <span class="g-corner tr dk">♠</span>
-          <span class="g-corner bl dk">♣</span>
-          <span class="g-corner br rc">♦</span>
-          <div class="g-info">
-            <div class="g-info-suit">♥ Fan Art</div>
-            <h3>作品标题</h3>
-            <p>2023 · 同人插画</p>
-          </div>
-        </div>
-        <span class="g-num">05</span>
-      </div>
-
-      <div class="g-item">
-        <div class="g-inner">
-          <div class="g-img"></div>
-          <div class="g-tint"></div>
-          <span class="g-corner tl dk">♠</span>
-          <span class="g-corner tr rc">♦</span>
-          <span class="g-corner bl rc">♥</span>
-          <span class="g-corner br dk">♣</span>
-          <div class="g-info">
-            <div class="g-info-suit">♦ Original</div>
-            <h3>作品标题</h3>
-            <p>2023 · 原创</p>
-          </div>
-        </div>
-        <span class="g-num">06</span>
-      </div>
-
-      <div class="g-item">
-        <div class="g-inner">
-          <div class="g-img"></div>
-          <div class="g-tint"></div>
-          <span class="g-corner tl rc">♦</span>
-          <span class="g-corner tr dk">♣</span>
-          <span class="g-corner bl dk">♠</span>
-          <span class="g-corner br rc">♥</span>
-          <div class="g-info">
-            <div class="g-info-suit">♠ Fan Art</div>
-            <h3>作品标题</h3>
-            <p>2023 · 同人插画</p>
-          </div>
-        </div>
-        <span class="g-num">07</span>
-      </div>
-
-      <div class="g-item">
-        <div class="g-inner">
-          <div class="g-img"></div>
-          <div class="g-tint"></div>
-          <span class="g-corner tl dk">♣</span>
-          <span class="g-corner tr rc">♥</span>
-          <span class="g-corner bl rc">♦</span>
-          <span class="g-corner br dk">♠</span>
-          <div class="g-info">
-            <div class="g-info-suit">♣ Fan Art</div>
-            <h3>作品标题</h3>
-            <p>2023 · 同人插画</p>
-          </div>
-        </div>
-        <span class="g-num">08</span>
-      </div>
-
-    </div>
+    <div class="gallery-grid" id="galleryGrid"></div>
   </section>
 
-  <div class="dia-stripe"></div>
+  <!-- divider: gallery(cream) → about(cream-warm) -->
+  <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="40" viewBox="0 0 1680 40" preserveAspectRatio="none" style="display:block;position:relative;z-index:10;margin-top:-20px;margin-bottom:-20px;">
+    <rect x="0" y="0" width="1680" height="20" fill="#f8f3ea"/>
+    <polygon points="30,0 60,20 30,40 0,20" fill="#8aafc8"/><polygon points="90,0 120,20 90,40 60,20" fill="#8aafc8"/><polygon points="150,0 180,20 150,40 120,20" fill="#8aafc8"/><polygon points="210,0 240,20 210,40 180,20" fill="#8aafc8"/><polygon points="270,0 300,20 270,40 240,20" fill="#8aafc8"/><polygon points="330,0 360,20 330,40 300,20" fill="#8aafc8"/><polygon points="390,0 420,20 390,40 360,20" fill="#8aafc8"/><polygon points="450,0 480,20 450,40 420,20" fill="#8aafc8"/><polygon points="510,0 540,20 510,40 480,20" fill="#8aafc8"/><polygon points="570,0 600,20 570,40 540,20" fill="#8aafc8"/><polygon points="630,0 660,20 630,40 600,20" fill="#8aafc8"/><polygon points="690,0 720,20 690,40 660,20" fill="#8aafc8"/><polygon points="750,0 780,20 750,40 720,20" fill="#8aafc8"/><polygon points="810,0 840,20 810,40 780,20" fill="#8aafc8"/><polygon points="870,0 900,20 870,40 840,20" fill="#8aafc8"/><polygon points="930,0 960,20 930,40 900,20" fill="#8aafc8"/><polygon points="990,0 1020,20 990,40 960,20" fill="#8aafc8"/><polygon points="1050,0 1080,20 1050,40 1020,20" fill="#8aafc8"/><polygon points="1110,0 1140,20 1110,40 1080,20" fill="#8aafc8"/><polygon points="1170,0 1200,20 1170,40 1140,20" fill="#8aafc8"/><polygon points="1230,0 1260,20 1230,40 1200,20" fill="#8aafc8"/><polygon points="1290,0 1320,20 1290,40 1260,20" fill="#8aafc8"/><polygon points="1350,0 1380,20 1350,40 1320,20" fill="#8aafc8"/><polygon points="1410,0 1440,20 1410,40 1380,20" fill="#8aafc8"/><polygon points="1470,0 1500,20 1470,40 1440,20" fill="#8aafc8"/><polygon points="1530,0 1560,20 1530,40 1500,20" fill="#8aafc8"/><polygon points="1590,0 1620,20 1590,40 1560,20" fill="#8aafc8"/><polygon points="1650,0 1680,20 1650,40 1620,20" fill="#8aafc8"/>
+  </svg>
 
-  <!-- About -->
+  <!-- ── About ── -->
   <section id="about">
-    <div class="about-portrait">
+    <div class="about-frame-wrap">
       <div class="about-frame">
-        <div class="a-corner tl"></div><div class="a-corner tr"></div>
-        <div class="a-corner bl"></div><div class="a-corner br"></div>
+        <div class="af-corner tl"></div><div class="af-corner tr"></div>
+        <div class="af-corner bl"></div><div class="af-corner br"></div>
         <div class="about-frame-inner">
-          <div class="about-suits-deco">
-            <span class="r">♥</span><span class="d">♠</span><span class="r">♦</span><span class="d">♣</span>
-          </div>
-          <div class="about-frame-text">在此放置<br>你的头像<br>或自画像</div>
+          <div class="about-suits-big"><span class="r">♥</span><span>♠</span><span class="r">♦</span><span>♣</span></div>
+          <div class="about-frame-txt" data-key="about_frame">在此放置<br>你的头像<br>或自画像</div>
         </div>
       </div>
-      <div class="about-badge">
-        <div class="about-badge-inner">
-          <span style="color:white;font-size:1.4rem">♠</span>
-        </div>
-      </div>
+      <div class="about-badge"><div class="about-badge-inner">♠</div></div>
     </div>
     <div class="about-content">
-      <div class="sec-eyebrow"><span class="e-suit">♥</span> About Me</div>
-      <h2 class="sec-title">关于我</h2>
-      <p class="about-text">你好，我是 YourName，一名热爱二次元文化的插画师。从小被日本动漫与游戏所影响，开始拿起画笔，记录那些令我心动的角色与瞬间。</p>
-      <p class="about-text">我的创作以同人插画为主，喜欢探索角色在不同情境下的情绪与细节。每一幅作品都是我与喜爱作品之间的一场无声对话。</p>
-      <div class="about-divider">
-        <span class="about-divider-suits"><span class="r">♥</span><span class="r">♦</span></span>
-      </div>
+      <div class="sec-eye"><span class="e-suit r">♥</span> <span data-key="about_eye">About Me</span></div>
+      <h2 class="sec-title" data-key="about_title">关于我</h2>
+      <p data-key="about_p1">你好，我是 YourName，一名热爱二次元文化的插画师。从小被日本动漫与游戏所影响，开始拿起画笔，记录那些令我心动的角色与瞬间。</p>
+      <p data-key="about_p2">我的创作以同人插画为主，喜欢探索角色在不同情境下的情绪与细节。每一幅作品都是我与喜爱作品之间的一场无声对话。</p>
+      <div class="about-divider"><span class="about-divider-suits"><span class="r">♥</span><span class="r">♦</span></span></div>
       <div class="about-tags">
         <span class="about-tag">Clip Studio Paint</span>
         <span class="about-tag">Procreate</span>
-        <span class="about-tag">同人插画</span>
-        <span class="about-tag">原创设计</span>
-        <span class="about-tag">角色设计</span>
+        <span class="about-tag" data-key="tag_fan">同人插画</span>
+        <span class="about-tag" data-key="tag_orig">原创设计</span>
+        <span class="about-tag" data-key="tag_char">角色设计</span>
       </div>
     </div>
   </section>
 
-  <div class="dia-stripe-dark"></div>
 
-  <!-- Footer -->
+
+  <!-- ── Footer ── -->
   <footer>
     <div class="footer-inner">
       <a href="#home" class="footer-logo">
@@ -732,66 +669,287 @@
         YourName
       </a>
       <ul class="footer-links">
-        <li><a href="#home">首页</a></li>
-        <li><a href="#gallery">作品集</a></li>
-        <li><a href="#about">关于我</a></li>
+        <li><a href="#home"    data-key="nav_home">首页</a></li>
+        <li><a href="#gallery" data-key="nav_gallery">作品集</a></li>
+        <li><a href="#about"   data-key="nav_about">关于我</a></li>
       </ul>
       <p class="footer-copy">© 2024 YourName · All rights reserved.</p>
     </div>
   </footer>
 
   <script>
-    // Cursor
-    const spade = document.getElementById('cursorSpade');
-    const ring  = document.getElementById('cursorRing');
-    let mx=0,my=0,rx=0,ry=0;
-    document.addEventListener('mousemove', e=>{
-      mx=e.clientX; my=e.clientY;
-      spade.style.left=mx+'px'; spade.style.top=my+'px';
-    });
-    (function loop(){
-      rx+=(mx-rx)*.1; ry+=(my-ry)*.1;
-      ring.style.left=rx+'px'; ring.style.top=ry+'px';
-      requestAnimationFrame(loop);
-    })();
-    document.querySelectorAll('a,button').forEach(el=>{
-      el.addEventListener('mouseenter',()=>{
-        spade.style.transform='translate(-50%,-50%) scale(1.5)';
-        ring.style.transform='translate(-50%,-50%) scale(1.6)';
-        ring.style.borderColor='var(--red)';
-        ring.style.opacity='.7';
-      });
-      el.addEventListener('mouseleave',()=>{
-        spade.style.transform='translate(-50%,-50%) scale(1)';
-        ring.style.transform='translate(-50%,-50%) scale(1)';
-        ring.style.borderColor='var(--blue-deep)';
-        ring.style.opacity='.4';
-      });
-    });
+  /* ════════════════════════════════════════
+     SLIDESHOW
+  ════════════════════════════════════════ */
+  (function(){
+    const track  = document.getElementById('slideTrack');
+    const dots   = document.querySelectorAll('.slide-dot');
+    const slides  = track.querySelectorAll('.slide');
+    const total  = slides.length;
+    let cur = 0, timer;
 
-    // Filter
-    document.querySelectorAll('.filter-btn').forEach(btn=>{
-      btn.addEventListener('click',()=>{
-        document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
-        btn.classList.add('active');
-      });
-    });
+    function goTo(n) {
+      cur = (n + total) % total;
+      track.style.transform = `translateX(-${cur * 100}%)`;
+      dots.forEach((d,i) => d.classList.toggle('active', i===cur));
+    }
 
-    // Scroll reveal
-    const obs=new IntersectionObserver(entries=>{
-      entries.forEach(e=>{
-        if(e.isIntersecting){
-          e.target.style.opacity='1';
-          e.target.style.transform='translateY(0)';
-        }
-      });
-    },{threshold:.08});
-    document.querySelectorAll('.g-item,.sec-eyebrow,.sec-title,.about-content,.about-portrait').forEach(el=>{
-      el.style.opacity='0';
-      el.style.transform='translateY(16px)';
-      el.style.transition='opacity .7s ease, transform .7s ease';
-      obs.observe(el);
+    document.getElementById('slidePrev').addEventListener('click', ()=>{ goTo(cur-1); resetTimer(); });
+    document.getElementById('slideNext').addEventListener('click', ()=>{ goTo(cur+1); resetTimer(); });
+    dots.forEach((d,i) => d.addEventListener('click', ()=>{ goTo(i); resetTimer(); }));
+
+    function resetTimer(){ clearInterval(timer); timer = setInterval(()=>goTo(cur+1), 3500); }
+    resetTimer();
+  })();
+
+  /* ════════════════════════════════════════
+     CURSOR
+  ════════════════════════════════════════ */
+  const spade = document.getElementById('cur-spade');
+  const trail = document.getElementById('cur-trail');
+  let mx=0,my=0,tx=0,ty=0;
+
+  document.addEventListener('mousemove', e=>{
+    mx=e.clientX; my=e.clientY;
+    // center the 36×42 spade on cursor tip (tip is at top center = 18,2 in viewBox)
+    spade.style.left = mx+'px';
+    spade.style.top  = my+'px';
+  });
+  (function loop(){
+    tx+=(mx-tx)*.1; ty+=(my-ty)*.1;
+    trail.style.left=tx+'px'; trail.style.top=ty+'px';
+    requestAnimationFrame(loop);
+  })();
+
+  document.querySelectorAll('a,button').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{
+      spade.style.transform='translate(-50%,-50%) scale(1.4)';
+      trail.style.transform='translate(-50%,-50%) scale(1.5)';
+      trail.style.borderColor='var(--red)';
+      trail.style.opacity='.6';
     });
+    el.addEventListener('mouseleave',()=>{
+      spade.style.transform='translate(-50%,-50%) scale(1)';
+      trail.style.transform='translate(-50%,-50%) scale(1)';
+      trail.style.borderColor='var(--blue-deep)';
+      trail.style.opacity='.35';
+    });
+  });
+
+  /* ════════════════════════════════════════
+     ★ 作品数据 — 只需编辑这里 ★
+     每条记录：
+       title:  作品标题
+       detail: 副标题（年份·类型）
+       cat:    'fanart' 或 'original'
+       img:    图片路径，例如 'images/work1.jpg'
+               留空时显示占位背景
+     ════════════════════════════════════════ */
+  const ARTWORKS = [
+    { title:'作品标题一', detail:'2024 · 同人插画', cat:'fanart',   img:'' },
+    { title:'作品标题二', detail:'2024 · 原创设计', cat:'original', img:'' },
+    { title:'作品标题三', detail:'2024 · 同人插画', cat:'fanart',   img:'' },
+    { title:'作品标题四', detail:'2024 · 原创',     cat:'original', img:'' },
+    { title:'作品标题五', detail:'2023 · 同人插画', cat:'fanart',   img:'' },
+    { title:'作品标题六', detail:'2023 · 原创',     cat:'original', img:'' },
+    { title:'作品标题七', detail:'2023 · 同人插画', cat:'fanart',   img:'' },
+    { title:'作品标题八', detail:'2023 · 原创',     cat:'original', img:'' },
+    // ← 在这里继续添加，格式同上
+  ];
+
+  /* 错落布局 pattern — 每8格一循环，col/row span值 */
+  const LAYOUT = [
+    {col:5,row:6}, {col:4,row:4}, {col:3,row:4},
+    {col:3,row:5}, {col:4,row:5}, {col:5,row:5},
+    {col:4,row:4}, {col:4,row:4},
+  ];
+
+  const SUITS_TL = ['♥','♠','♦','♣','♥','♠','♦','♣'];
+  const SUITS_TR = ['♠','♦','♣','♥','♠','♦','♣','♥'];
+  const SUITS_BL = ['♣','♥','♠','♦','♣','♥','♠','♦'];
+  const SUITS_BR = ['♦','♣','♥','♠','♦','♣','♥','♠'];
+  const SUIT_LABEL = ['♥','♦','♠','♣','♥','♦','♠','♣'];
+  const IS_RED = (s) => s==='♥'||s==='♦';
+
+  const PLACEHOLDER_SVG = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='120'%3E%3Cpolygon points='40,0 80,60 40,120 0,60' fill='%23a8c8e0' opacity='0.5'/%3E%3C/svg%3E")`;
+
+  function buildGallery() {
+    const grid = document.getElementById('galleryGrid');
+    grid.innerHTML = '';
+    ARTWORKS.forEach((w, i) => {
+      const layout = LAYOUT[i % LAYOUT.length];
+      const si = i % 8;
+      const tl = SUITS_TL[si], tr = SUITS_TR[si];
+      const bl = SUITS_BL[si], br = SUITS_BR[si];
+      const suit = SUIT_LABEL[si];
+      const suitLabel = (w.cat==='fanart' ? suit+' Fan Art' : suit+' Original');
+      const imgStyle = w.img
+        ? `background-image:url('${w.img}');background-size:cover;background-position:center;`
+        : `background-color:#cfe3f0;background-image:${PLACEHOLDER_SVG};background-size:80px 120px;`;
+
+      const el = document.createElement('div');
+      el.className = 'g-item';
+      el.dataset.cat = w.cat;
+      el.style.gridColumn = `span ${layout.col}`;
+      el.style.gridRow    = `span ${layout.row}`;
+      el.innerHTML = `
+        <div class="g-inner">
+          <div class="g-img" style="${imgStyle}"></div>
+          <div class="g-tint"></div>
+          <span class="gc tl ${IS_RED(tl)?'r':'k'}">${tl}</span>
+          <span class="gc tr ${IS_RED(tr)?'r':'k'}">${tr}</span>
+          <span class="gc bl ${IS_RED(bl)?'r':'k'}">${bl}</span>
+          <span class="gc br ${IS_RED(br)?'r':'k'}">${br}</span>
+          <div class="g-info">
+            <div class="g-info-suit">${suitLabel}</div>
+            <h3>${w.title}</h3>
+            <p>${w.detail}</p>
+          </div>
+        </div>
+        <span class="g-num">${String(i+1).padStart(2,'0')}</span>`;
+      grid.appendChild(el);
+    });
+  }
+  buildGallery();
+
+  /* ════════════════════════════════════════
+     GALLERY FILTER
+  ════════════════════════════════════════ */
+  document.querySelectorAll('.filter-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const f = btn.dataset.filter;
+      document.querySelectorAll('.g-item').forEach(item=>{
+        item.classList.toggle('hidden', f!=='all' && item.dataset.cat!==f);
+      });
+    });
+  });
+
+  /* ════════════════════════════════════════
+     LANGUAGE SWITCHER
+     Modes: zh-en (中主 EN副) | en-zh (EN主 中副) | ja-en (日主 EN副)
+  ════════════════════════════════════════ */
+  const STRINGS = {
+    'zh-en': {
+      nav_home:'首页', nav_gallery:'作品集', nav_about:'关于我',
+      hero_label:'同人插画师',
+      hero_sub:'二 次 元 插 画',
+      hero_quote:'"We\'re all mad here."',
+      hero_btn:'浏览作品集',
+      hero_card:'在此放置\n你的代表作',
+      gal_eye:'Portfolio', gal_title:'作品集',
+      fil_all:'全部', fil_orig:'原创', fil_fan:'同人',
+      w1_title:'作品标题一', w1_detail:'2024 · 同人插画',
+      w2_title:'作品标题二', w2_detail:'2024 · 原创设计',
+      w3_title:'作品标题三', w3_detail:'2024 · 同人插画',
+      w4_title:'作品标题四', w4_detail:'2024 · 原创',
+      w5_title:'作品标题五', w5_detail:'2023 · 同人插画',
+      w6_title:'作品标题六', w6_detail:'2023 · 原创',
+      w7_title:'作品标题七', w7_detail:'2023 · 同人插画',
+      w8_title:'作品标题八', w8_detail:'2023 · 原创',
+      about_eye:'About Me', about_title:'关于我',
+      about_frame:'在此放置\n你的头像\n或自画像',
+      about_p1:'你好，我是 YourName，一名热爱二次元文化的插画师。从小被日本动漫与游戏所影响，开始拿起画笔，记录那些令我心动的角色与瞬间。',
+      about_p2:'我的创作以同人插画为主，喜欢探索角色在不同情境下的情绪与细节。每一幅作品都是我与喜爱作品之间的一场无声对话。',
+      tag_fan:'同人插画', tag_orig:'原创设计', tag_char:'角色设计',
+    },
+    'en-zh': {
+      nav_home:'Home', nav_gallery:'Gallery', nav_about:'About',
+      hero_label:'Fan Art Illustrator',
+      hero_sub:'A n i m e  I l l u s t r a t i o n',
+      hero_quote:'"We\'re all mad here."',
+      hero_btn:'Browse Gallery',
+      hero_card:'Place your\nfeatured work\nhere',
+      gal_eye:'Portfolio', gal_title:'Gallery',
+      fil_all:'All', fil_orig:'Original', fil_fan:'Fan Art',
+      w1_title:'Artwork Title I',   w1_detail:'2024 · Fan Art',
+      w2_title:'Artwork Title II',  w2_detail:'2024 · Original',
+      w3_title:'Artwork Title III', w3_detail:'2024 · Fan Art',
+      w4_title:'Artwork Title IV',  w4_detail:'2024 · Original',
+      w5_title:'Artwork Title V',   w5_detail:'2023 · Fan Art',
+      w6_title:'Artwork Title VI',  w6_detail:'2023 · Original',
+      w7_title:'Artwork Title VII', w7_detail:'2023 · Fan Art',
+      w8_title:'Artwork Title VIII',w8_detail:'2023 · Original',
+      about_eye:'About Me', about_title:'About',
+      about_frame:'Place your\nportrait or\navatar here',
+      about_p1:'Hello, I\'m YourName — a fan art illustrator passionate about anime and game culture. Inspired from an early age, I pick up my pen to capture the characters and moments that move me.',
+      about_p2:'My work focuses on fan illustration, exploring the emotions and details of beloved characters in varied scenes. Each piece is a silent conversation between me and the works I love.',
+      tag_fan:'Fan Art', tag_orig:'Original', tag_char:'Character Design',
+    },
+    'ja-en': {
+      nav_home:'ホーム', nav_gallery:'作品集', nav_about:'について',
+      hero_label:'同人イラストレーター',
+      hero_sub:'ア ニ メ イ ラ ス ト',
+      hero_quote:'"We\'re all mad here."',
+      hero_btn:'作品集を見る',
+      hero_card:'代表作を\nここに置く',
+      gal_eye:'Portfolio', gal_title:'作品集',
+      fil_all:'すべて', fil_orig:'オリジナル', fil_fan:'同人',
+      w1_title:'作品タイトル一', w1_detail:'2024 · 同人',
+      w2_title:'作品タイトル二', w2_detail:'2024 · オリジナル',
+      w3_title:'作品タイトル三', w3_detail:'2024 · 同人',
+      w4_title:'作品タイトル四', w4_detail:'2024 · オリジナル',
+      w5_title:'作品タイトル五', w5_detail:'2023 · 同人',
+      w6_title:'作品タイトル六', w6_detail:'2023 · オリジナル',
+      w7_title:'作品タイトル七', w7_detail:'2023 · 同人',
+      w8_title:'作品タイトル八', w8_detail:'2023 · オリジナル',
+      about_eye:'About Me', about_title:'について',
+      about_frame:'アバターまたは\n自画像を\nここに置く',
+      about_p1:'こんにちは、YourName です。アニメやゲーム文化を愛するイラストレーターです。幼い頃から日本のアニメやゲームに魅了され、心を動かすキャラクターや瞬間を描き続けています。',
+      about_p2:'主に同人イラストを制作しており、さまざまなシーンにおけるキャラクターの感情と細部を探求しています。すべての作品は、私と好きな作品との無言の対話です。',
+      tag_fan:'同人イラスト', tag_orig:'オリジナル', tag_char:'キャラクターデザイン',
+    }
+  };
+
+  function setLang(mode){
+    // update button states
+    document.querySelectorAll('.lang-btn').forEach(b=>{
+      b.classList.toggle('active', b.textContent.trim().replace('/','‑') === mode.replace('/','‑')
+        || (mode==='zh-en'&&b.textContent.includes('中/EN'))
+        || (mode==='en-zh'&&b.textContent.includes('EN/中'))
+        || (mode==='ja-en'&&b.textContent.includes('日/EN'))
+      );
+    });
+    const s = STRINGS[mode];
+    // font tweak for Japanese
+    document.body.style.fontFamily = mode==='ja-en'
+      ? "'Noto Serif JP', serif"
+      : "'IM Fell English', serif";
+
+    document.querySelectorAll('[data-key]').forEach(el=>{
+      const v = s[el.dataset.key];
+      if(v!==undefined) el.textContent = v.replace(/\\n/g,'\n');
+    });
+  }
+
+  // filter buttons need text update when language changes — handled by data-key spans inside buttons
+  // init
+  document.querySelectorAll('.lang-btn').forEach(b=>{
+    b.addEventListener('click',()=>{
+      if(b.textContent.includes('中/EN')) setLang('zh-en');
+      else if(b.textContent.includes('EN/中')) setLang('en-zh');
+      else setLang('ja-en');
+    });
+  });
+
+  /* ════════════════════════════════════════
+     SCROLL REVEAL
+  ════════════════════════════════════════ */
+  const obs = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.style.opacity='1';
+        e.target.style.transform='translateY(0)';
+      }
+    });
+  },{threshold:.07});
+  document.querySelectorAll('.g-item,.sec-eye,.sec-title,.about-content,.about-frame-wrap').forEach(el=>{
+    el.style.opacity='0';
+    el.style.transform='translateY(14px)';
+    el.style.transition='opacity .7s ease, transform .7s ease';
+    obs.observe(el);
+  });
   </script>
 </body>
 </html>
