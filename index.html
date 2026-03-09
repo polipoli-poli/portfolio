@@ -398,11 +398,23 @@
     .g-img{
       position:absolute; inset:0; z-index:1;
       background-color:var(--blue-pale);
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='120'%3E%3Cpolygon points='40,0 80,60 40,120 0,60' fill='%23a8c8e0' opacity='0.5'/%3E%3C/svg%3E");
-      background-size:80px 120px;
-      background-size:cover; background-position:center;
+      display:flex; align-items:center; justify-content:center;
+      overflow:hidden;
       transition:filter .5s ease;
     }
+    .g-img.placeholder{
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='120'%3E%3Cpolygon points='40,0 80,60 40,120 0,60' fill='%23a8c8e0' opacity='0.5'/%3E%3C/svg%3E");
+      background-size:80px 120px;
+    }
+    .g-img img{
+      width:100%; height:100%;
+      object-fit:contain;
+      object-position:center;
+      display:block;
+      transition:transform .5s ease;
+    }
+    .g-item:hover .g-img img{ transform:scale(1.03); }
+
 
     /* COLOR TINT OVERLAY — blue/cream default, disappears on hover */
     .g-tint{
@@ -746,15 +758,15 @@
                留空时显示占位背景
      ════════════════════════════════════════ */
   const ARTWORKS = [
-    { title:'作品标题一', detail:'2024 · 同人插画', cat:'fanart',   img:'' },
-    { title:'作品标题二', detail:'2024 · 原创设计', cat:'original', img:'' },
-    { title:'作品标题三', detail:'2024 · 同人插画', cat:'fanart',   img:'' },
-    { title:'作品标题四', detail:'2024 · 原创',     cat:'original', img:'' },
-    { title:'作品标题五', detail:'2023 · 同人插画', cat:'fanart',   img:'' },
-    { title:'作品标题六', detail:'2023 · 原创',     cat:'original', img:'' },
+    { title:'冬日', detail:'2024 · 同人插画', cat:'fanart',   img:'images/背景帕睁眼_副本.jpg' },
+    { title:'炼金术士', detail:'2024 · 同人插画', cat:'fanart', img:'images/插画_副本.jpg' },
+    { title:'生日快乐', detail:'2024 · 同人插画', cat:'fanart',   img:'images/插画1_副本.jpg' },
+    { title:'群像', detail:'2024 · 同人插画',     cat:'fanart', img:'images/插画2_副本.jpg' },
+    { title:'角色设计', detail:'2024 · 原创', cat:'original',   img:'images/插画3_副本.png' },
+    { title:'魔术师', detail:'2023 · 同人插画', cat:'fanart', img:'images/插画12.jpg' },
     { title:'作品标题七', detail:'2023 · 同人插画', cat:'fanart',   img:'' },
     { title:'作品标题八', detail:'2023 · 原创',     cat:'original', img:'' },
-    // ← 在这里继续添加，格式同上
+    // ← 在这里继续添加，img 路径格式：'images/你的文件名.jpg'
   ];
 
   /* 错落布局 pattern — 每8格一循环，col/row span值 */
@@ -783,9 +795,10 @@
       const bl = SUITS_BL[si], br = SUITS_BR[si];
       const suit = SUIT_LABEL[si];
       const suitLabel = (w.cat==='fanart' ? suit+' Fan Art' : suit+' Original');
-      const imgStyle = w.img
-        ? `background-image:url('${w.img}');background-size:cover;background-position:center;`
-        : `background-color:#cfe3f0;background-image:${PLACEHOLDER_SVG};background-size:80px 120px;`;
+      const imgHtml = w.img
+        ? `<img src="${w.img}" alt="${w.title}" loading="lazy">`
+        : '';
+      const imgClass = w.img ? 'g-img' : 'g-img placeholder';
 
       const el = document.createElement('div');
       el.className = 'g-item';
@@ -794,7 +807,7 @@
       el.style.gridRow    = `span ${layout.row}`;
       el.innerHTML = `
         <div class="g-inner">
-          <div class="g-img" style="${imgStyle}"></div>
+          <div class="${imgClass}">${imgHtml}</div>
           <div class="g-tint"></div>
           <span class="gc tl ${IS_RED(tl)?'r':'k'}">${tl}</span>
           <span class="gc tr ${IS_RED(tr)?'r':'k'}">${tr}</span>
