@@ -764,7 +764,7 @@
      - title 留空则不显示标题
   */
   const RAW_IMGS = [
-    { title:'', img:'images/20230119_fan.jpg' },
+    { title:'', img:'images/20230119_fan.jpg', featured:true },
     { title:'', img:'images/20230209.jpg' },
     { title:'', img:'images/20230210.jpg' },
     { title:'', img:'images/20231222.jpg' },
@@ -872,7 +872,7 @@
      5. 端数行：图片少时适当放大，不强制填满
   ════════════════════════════════════════ */
   const COLS = 12;
-  const TARGET_ROW_RATIO = 2.8; // 目标行宽/行高比（值越大，每行放更多图）
+  const TARGET_ROW_RATIO = 2.2; // 目标行宽/行高比（值越大，每行放更多图）
 
   function measureImg(src) {
     return new Promise(resolve => {
@@ -886,9 +886,24 @@
 
   /* 将比例列表用 justified 算法分行
      返回 [ [{idx, cols}, ...], ... ]
-     cols 是 12 列网格中该图占的列数（整数，最小1）
+     竖图保底列数更高，不会被横图挤扁
   */
-  function justifyRows(ratios) {
+
+  // featured 图强制最小列数
+  const FEATURED_MIN_COLS = 7;
+
+  // 根据比例给"最低保底列数"，竖图给更多空间
+  function minColsForRatio(r, featured) {
+    if (featured) return FEATURED_MIN_COLS;
+    if (r < 0.55) return 5;   // 极竖
+    if (r < 0.75) return 4;   // 普通竖图
+    if (r < 1.1)  return 4;   // 接近方形
+    return 3;                  // 横图不需要保底
+  }
+
+  // items: [{ratio, featured}, ...]
+  function justifyRows(items) {
+    const ratios = items.map(x => x.ratio);
     const rows = [];
     let rowStart = 0;
 
@@ -896,7 +911,6 @@
       let cumRatio = 0;
       let rowEnd = rowStart;
 
-      // 累加宽高比，直到超过目标行比例
       while (rowEnd < ratios.length) {
         cumRatio += ratios[rowEnd];
         rowEnd++;
@@ -905,29 +919,42 @@
 
       const rowRatios = ratios.slice(rowStart, rowEnd);
       const total = rowRatios.reduce((a, b) => a + b, 0);
-
-      // 是否是最后一行（不强制填满，但至少给合理宽度）
       const isLast = rowEnd >= ratios.length;
-      const scaleFactor = isLast
-        ? Math.min(1, TARGET_ROW_RATIO / total) // 最后一行不超过满宽
-        : 1;
 
-      // 分配列数：按比例占 12 列，保证每图至少 2 列
-      const rawCols = rowRatios.map(r => (r / total) * COLS * (isLast ? scaleFactor * (total / TARGET_ROW_RATIO) : 1));
+      // 先按比例计算原始列数
+      const scale = isLast ? Math.min(1, TARGET_ROW_RATIO / total) * (total / TARGET_ROW_RATIO) : 1;
+      let rawCols = rowRatios.map(r => (r / total) * COLS * (isLast ? scale : 1));
 
-      // 取整并修正总和为 12（非最后行）
-      let intCols = rawCols.map(c => Math.max(2, Math.round(c)));
+      // 应用保底列数（不能低于 minColsForRatio）
+      let intCols = rawCols.map((c, k) => {
+        const minC = minColsForRatio(rowRatios[k], items[rowStart + k].featured);
+        return Math.max(minC, Math.round(c));
+      });
+
       if (!isLast) {
         // 修正舍入误差，让总和精确等于 COLS
         let diff = COLS - intCols.reduce((a, b) => a + b, 0);
-        // 按小数部分从大到小调整
         const order = rawCols
           .map((c, i) => ({ i, frac: c - Math.floor(c) }))
           .sort((a, b) => b.frac - a.frac);
         for (let k = 0; diff !== 0 && k < order.length; k++) {
           const idx = order[k].i;
+          const minC = minColsForRatio(rowRatios[idx], items[rowStart + idx].featured);
           if (diff > 0) { intCols[idx]++; diff--; }
-          else if (diff < 0 && intCols[idx] > 2) { intCols[idx]--; diff++; }
+          else if (diff < 0 && intCols[idx] > minC) { intCols[idx]--; diff++; }
+        }
+        // 若保底导致总和超过12，从横图里扣（它们没有高保底）
+        let overflow = intCols.reduce((a,b)=>a+b,0) - COLS;
+        if (overflow > 0) {
+          // 优先从横图（ratio>1）扣列
+          const byRatio = rowRatios
+            .map((r,i)=>({i,r}))
+            .filter(x=>x.r>1.0)
+            .sort((a,b)=>b.r-a.r);
+          for (const {i} of byRatio) {
+            if (overflow <= 0) break;
+            if (intCols[i] > 3) { intCols[i]--; overflow--; }
+          }
         }
       }
 
@@ -957,6 +984,7 @@
       <div class="g-inner">
         <div class="${imgClass}">${imgHtml}</div>
         <div class="g-tint"></div>
+        ${w.featured ? '<span class="g-featured-badge">♛</span>' : ''}
         <span class="gc tl ${IS_RED(tl)?'r':'k'}">${tl}</span>
         <span class="gc tr ${IS_RED(tr)?'r':'k'}">${tr}</span>
         <span class="gc bl ${IS_RED(bl)?'r':'k'}">${bl}</span>
@@ -978,9 +1006,12 @@
       letter-spacing:.15em;opacity:.7;">♠ &nbsp; Loading &nbsp; ♠</div>`;
 
     const sizes = await Promise.all(ARTWORKS.map(w => measureImg(w.img)));
-    const ratios = sizes.map(s => s.w / s.h);
+    const items = ARTWORKS.map((w, i) => ({
+      ratio: sizes[i].w / sizes[i].h,
+      featured: !!w.featured
+    }));
 
-    const rows = justifyRows(ratios);
+    const rows = justifyRows(items);
     grid.innerHTML = '';
     rows.forEach(row => {
       row.forEach(item => {
