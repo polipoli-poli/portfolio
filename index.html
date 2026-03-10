@@ -43,14 +43,7 @@
       transition:transform .12s, filter .2s;
       filter: drop-shadow(1px 2px 2px rgba(30,45,74,0.25));
     }
-    #cur-trail {
-      position:fixed; pointer-events:none; z-index:9998;
-      width:44px; height:44px; border-radius:50%;
-      border:1.5px solid var(--blue-deep);
-      transform:translate(-50%,-50%);
-      transition:all .38s cubic-bezier(.25,.46,.45,.94);
-      opacity:.35;
-    }
+    #cur-trail{ display:none; }
 
     /* ═══════════════════════════════════
        TALL ARGYLE DIAMOND HELPERS
@@ -425,12 +418,7 @@
 
 
     /* COLOR TINT OVERLAY — blue/cream default, disappears on hover */
-    .g-tint{
-      position:absolute; inset:0; z-index:2; pointer-events:none;
-      background:linear-gradient(135deg, rgba(90,138,170,.45) 0%, rgba(248,243,234,.4) 100%);
-      mix-blend-mode:color;
-      transition:opacity .5s ease;
-    }
+    .g-tint{ display:none; }
     .g-item:hover .g-tint{opacity:0;}
 
     /* Info panel — slides up from bottom-left on hover */
@@ -550,6 +538,50 @@
       .masonry-col{ padding:0 5px; gap:10px; }
       .footer-inner{flex-direction:column;gap:1.5rem;text-align:center;}
     }
+  
+    /* ═══ LIGHTBOX ═══ */
+    #lightbox{
+      display:none; position:fixed; inset:0; z-index:9000;
+      background:rgba(20,20,30,.88);
+      align-items:center; justify-content:center;
+      cursor:none;
+    }
+    #lightbox.open{ display:flex; }
+    #lightbox img{
+      max-width:90vw; max-height:90vh;
+      object-fit:contain;
+      border:2px solid var(--navy);
+      box-shadow:0 8px 48px rgba(0,0,0,.55);
+      border-radius:2px;
+    }
+    #lightbox-close{
+      position:absolute; top:20px; right:28px;
+      font-size:2rem; color:#fff; cursor:none;
+      background:none; border:none;
+      font-family:'IM Fell English',serif;
+      opacity:.7; transition:opacity .2s;
+    }
+    #lightbox-close:hover{ opacity:1; }
+
+    /* ═══ ASKBOX ═══ */
+    #askbox{
+      position:fixed; bottom:24px; right:24px;
+      z-index:8000; display:flex; flex-direction:column;
+      align-items:center; gap:4px;
+      text-decoration:none; cursor:none;
+    }
+    #askbox img{
+      width:48px; height:auto;
+      image-rendering:pixelated;
+      transition:transform .2s ease;
+    }
+    #askbox:hover img{ transform:translateY(-4px); }
+    #askbox span{
+      font-family:'IM Fell English',serif;
+      font-size:.7rem; color:var(--navy);
+      letter-spacing:.08em; opacity:.8;
+    }
+
   </style>
 </head>
 <body>
@@ -727,33 +759,20 @@
      CURSOR
   ════════════════════════════════════════ */
   const spade = document.getElementById('cur-spade');
-  const trail = document.getElementById('cur-trail');
-  let mx=0,my=0,tx=0,ty=0;
+  let mx=0,my=0;
 
   document.addEventListener('mousemove', e=>{
     mx=e.clientX; my=e.clientY;
-    // center the 36×42 spade on cursor tip (tip is at top center = 18,2 in viewBox)
     spade.style.left = mx+'px';
     spade.style.top  = my+'px';
   });
-  (function loop(){
-    tx+=(mx-tx)*.1; ty+=(my-ty)*.1;
-    trail.style.left=tx+'px'; trail.style.top=ty+'px';
-    requestAnimationFrame(loop);
-  })();
 
-  document.querySelectorAll('a,button').forEach(el=>{
+  document.querySelectorAll('a,button,.g-img').forEach(el=>{
     el.addEventListener('mouseenter',()=>{
       spade.style.transform='translate(-50%,-50%) scale(1.4)';
-      trail.style.transform='translate(-50%,-50%) scale(1.5)';
-      trail.style.borderColor='var(--red)';
-      trail.style.opacity='.6';
     });
     el.addEventListener('mouseleave',()=>{
       spade.style.transform='translate(-50%,-50%) scale(1)';
-      trail.style.transform='translate(-50%,-50%) scale(1)';
-      trail.style.borderColor='var(--blue-deep)';
-      trail.style.opacity='.35';
     });
   });
 
@@ -1098,6 +1117,48 @@
     el.style.transition='opacity .7s ease, transform .7s ease';
     obs.observe(el);
   });
-  </script>
+  
+  /* ════════════════════════════════════════
+     LIGHTBOX
+  ════════════════════════════════════════ */
+  (function(){
+    const lb   = document.getElementById('lightbox');
+    const lbImg= document.getElementById('lightbox-img');
+    const lbClose = document.getElementById('lightbox-close');
+
+    function openLightbox(src, alt) {
+      lbImg.src = src;
+      lbImg.alt = alt || '';
+      lb.classList.add('open');
+    }
+    function closeLightbox() {
+      lb.classList.remove('open');
+      lbImg.src = '';
+    }
+
+    lbClose.addEventListener('click', closeLightbox);
+    lb.addEventListener('click', e => { if(e.target === lb) closeLightbox(); });
+    document.addEventListener('keydown', e => { if(e.key==='Escape') closeLightbox(); });
+
+    // 委托：点击 gallery 里的图片触发灯箱
+    document.getElementById('galleryGrid').addEventListener('click', e => {
+      const img = e.target.closest('.g-img')?.querySelector('img');
+      if (img) openLightbox(img.src, img.alt);
+    });
+  })();
+
+</script>
+
+  <!-- LIGHTBOX -->
+  <div id="lightbox">
+    <button id="lightbox-close">✕</button>
+    <img id="lightbox-img" src="" alt="">
+  </div>
+
+  <!-- ASKBOX -->
+  <a id="askbox" href="https://wavebox.me/wave/1knrdpyq4txmmh8e/" target="_blank" rel="noopener">
+    <img src="assets/askmeanything.png" alt="askbox">
+    <span>askbox</span>
+  </a>
 </body>
 </html>
