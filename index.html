@@ -370,7 +370,7 @@
       gap:16px;
       padding:0 8px;
     }
-    .g-item{position:relative; overflow:visible; cursor:none; transition:opacity .35s, transform .35s;}
+    .g-item{position:relative; overflow:visible; cursor:none; transition:opacity .35s, transform .35s; pointer-events:auto;}
     .g-item.hidden{display:none;}
 
     .g-inner{
@@ -424,6 +424,7 @@
     /* Info panel — slides up from bottom-left on hover */
     .g-info{
       position:absolute; bottom:0; left:0; right:0; z-index:5;
+      pointer-events:none;
       padding:1rem 1rem .8rem;
       background:linear-gradient(to top, rgba(30,45,74,.9) 60%, transparent);
       transform:translateY(100%);
@@ -1140,12 +1141,13 @@
     lb.addEventListener('click', e => { if(e.target === lb) closeLightbox(); });
     document.addEventListener('keydown', e => { if(e.key==='Escape') closeLightbox(); });
 
-    // 委托：点击 gallery 里的图片触发灯箱
-    document.getElementById('galleryGrid').addEventListener('click', e => {
-      // e.target 可能是 img 本身，也可能是 .g-img 容器
-      const img = e.target.tagName === 'IMG'
-        ? e.target
-        : e.target.closest('.g-img')?.querySelector('img');
+    // 委托：点击卡片任意位置触发灯箱
+    document.addEventListener('click', e => {
+      const item = e.target.closest('.g-item');
+      if (!item) return;
+      // 排除点到 filter 按钮等非 gallery 元素
+      if (!item.closest('#galleryGrid')) return;
+      const img = item.querySelector('.g-img img');
       if (img && img.src) openLightbox(img.src, img.alt);
     });
   })();
