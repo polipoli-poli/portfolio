@@ -757,17 +757,103 @@
        img:    图片路径，例如 'images/work1.jpg'
                留空时显示占位背景
      ════════════════════════════════════════ */
-  const ARTWORKS = [
-    { title:'冬日', detail:'2024 · 同人插画', cat:'fanart',   img:'images/20240710.jpg' },
-    { title:'炼金术士', detail:'2024 · 同人插画', cat:'fanart', img:'images/20241018.png' },
-    { title:'生日快乐', detail:'2024 · 同人插画', cat:'fanart',   img:'images/20241026.png' },
-    { title:'群像', detail:'2024 · 同人插画',     cat:'fanart', img:'images/20241030.png' },
-    { title:'角色设计', detail:'2024 · 原创', cat:'original',   img:'images/202410301.png' },
-    { title:'魔术师', detail:'2023 · 同人插画', cat:'fanart', img:'images/20241108.jpg' },
-    { title:'作品标题七', detail:'2023 · 同人插画', cat:'fanart',   img:'' },
-    { title:'作品标题八', detail:'2023 · 原创',     cat:'original', img:'' },
-    // ← 在这里继续添加，img 路径格式：'images/20250101.jpg'
+  /* 只需要填文件路径和标题，其他全自动解析
+     - 有 _fan 后缀 → 同人插画
+     - 无后缀       → 原创
+     - 时间从文件名前8位解析，格式：YYYYMMDD（第9位忽略）
+     - title 留空则不显示标题
+  */
+  const RAW_IMGS = [
+    { title:'', img:'images/20230119_fan.jpg' },
+    { title:'', img:'images/20230209.jpg' },
+    { title:'', img:'images/20230210.jpg' },
+    { title:'', img:'images/20231222.jpg' },
+    { title:'', img:'images/20240106.jpg' },
+    { title:'', img:'images/20240111.jpg' },
+    { title:'', img:'images/20240124.jpg' },
+    { title:'', img:'images/20240124.png' },
+    { title:'', img:'images/20240214.jpg' },
+    { title:'', img:'images/20240216.jpg' },
+    { title:'', img:'images/20240426.png' },
+    { title:'', img:'images/20240427.jpg' },
+    { title:'', img:'images/20240506.jpg' },
+    { title:'冬日', img:'images/20240710.jpg' },
+    { title:'', img:'images/20240810.jpg' },
+    { title:'', img:'images/20240817.jpg' },
+    { title:'', img:'images/20240910.jpg' },
+    { title:'炼金术士', img:'images/20241018.png' },
+    { title:'生日快乐', img:'images/20241026.png' },
+    { title:'群像', img:'images/20241030_fan.png' },
+    { title:'', img:'images/20241031.jpg' },
+    { title:'魔术师', img:'images/20241108.png' },
+    { title:'', img:'images/20241201_fan.jpg' },
+    { title:'角色设计', img:'images/202410301_fan.png' },
+    { title:'', img:'images/20250208_fan.jpg' },
+    { title:'', img:'images/20250220.jpg' },
+    { title:'', img:'images/20250227.png' },
+    { title:'', img:'images/20250309.jpg' },
+    { title:'', img:'images/20250326_fan.jpg' },
+    { title:'', img:'images/20250330_fan.jpg' },
+    { title:'', img:'images/20250417_fan.jpg' },
+    { title:'', img:'images/20250418_fan.png' },
+    { title:'', img:'images/20250424_fan.jpg' },
+    { title:'', img:'images/20250425.png' },
+    { title:'', img:'images/20250426.png' },
+    { title:'', img:'images/20250506_fan.png' },
+    { title:'', img:'images/20250509_fan.png' },
+    { title:'', img:'images/20250510_fan.png' },
+    { title:'', img:'images/20250511_fan.jpg' },
+    { title:'', img:'images/20250611_fan.jpg' },
+    { title:'', img:'images/20250703.jpg' },
+    { title:'', img:'images/20250713.png' },
+    { title:'', img:'images/20250716_fan.jpg' },
+    { title:'', img:'images/20250801.png' },
+    { title:'', img:'images/20250812.jpg' },
+    { title:'', img:'images/20250825_fan.jpg' },
+    { title:'', img:'images/20251003_fan.png' },
+    { title:'', img:'images/20251008_fan.png' },
+    { title:'', img:'images/20251023.jpg' },
+    { title:'', img:'images/20251027_fan.jpg' },
+    { title:'', img:'images/20251104.jpg' },
+    { title:'', img:'images/20251107.png' },
+    { title:'', img:'images/20251110_fan.jpg' },
+    { title:'', img:'images/20251116_fan.jpg' },
+    { title:'', img:'images/20251126_fan.png' },
+    { title:'', img:'images/20251218.jpg' },
+    { title:'', img:'images/20251222.jpg' },
+    { title:'', img:'images/202512221.jpg' },
+    { title:'', img:'images/20251224.jpg' },
+    { title:'', img:'images/20251227.jpg' },
+    { title:'', img:'images/20251230_fan.jpg' },
+    { title:'', img:'images/20260110_fan.jpg' },
+    { title:'', img:'images/20260111_fan.jpg' },
+    { title:'', img:'images/20260118.jpg' },
+    { title:'', img:'images/20260119_fan.jpg' },
+    { title:'', img:'images/202601191_fan.jpg' },
+    { title:'', img:'images/20260208_fan.png' },
+    { title:'', img:'images/20260217_fan.jpg' },
+    { title:'', img:'images/20260218_fan.jpg' },
+    { title:'', img:'images/20260219_fan.png' },
+    { title:'', img:'images/20260220_fan.jpg' },
+    { title:'', img:'images/20260303_fan.jpg' },
+    // ← 继续在这里添加，格式：{ title:'', img:'images/YYYYMMDD_fan.jpg' }
   ];
+
+  /* 自动解析文件名 → detail / cat */
+  function parseImg(entry) {
+    const filename = entry.img.split('/').pop(); // e.g. "20241018_fan.png"
+    const isFan = /_fan\./i.test(filename);
+    const cat = isFan ? 'fanart' : 'original';
+    const dateStr = filename.replace(/_fan/i,'').replace(/\.[^.]+$/,''); // 去掉后缀和_fan
+    const digits = dateStr.replace(/\D/g,'').slice(0,8); // 取前8位数字
+    const year  = digits.slice(0,4);
+    const month = parseInt(digits.slice(4,6), 10);
+    const typeLabel = isFan ? '同人插画' : '原创';
+    const detail = year && month ? `${year}年${month}月 · ${typeLabel}` : typeLabel;
+    return { title: entry.title, detail, cat, img: entry.img };
+  }
+
+  const ARTWORKS = RAW_IMGS.map(parseImg);
 
   const SUITS_TL = ['♥','♠','♦','♣','♥','♠','♦','♣'];
   const SUITS_TR = ['♠','♦','♣','♥','♠','♦','♣','♥'];
@@ -776,81 +862,136 @@
   const SUIT_LABEL = ['♥','♦','♠','♣','♥','♦','♠','♣'];
   const IS_RED = (s) => s==='♥'||s==='♦';
 
-  /* 布局根据图片实际比例动态分配列宽 */
-  function getColSpan(ratio) {
-    if (ratio >= 1.5) return 7;       // 很横
-    if (ratio >= 1.0) return 5;       // 略横/方
-    if (ratio >= 0.6) return 4;       // 略竖
-    return 3;                          // 很竖
+  /* ════════════════════════════════════════
+     ★ 智能行填充布局系统 ★
+     1. 并行预加载全部图片，获取真实尺寸
+     2. 比例 → 首选列宽
+     3. 贪心行打包：逐行凑满 12 列
+     4. 全部就绪后一次性渲染，无闪烁
+  ════════════════════════════════════════ */
+  const COLS = 12;
+
+  function ratioToSpan(r) {
+    if (r >= 2.0) return 7;
+    if (r >= 1.4) return 6;
+    if (r >= 0.95) return 5;
+    if (r >= 0.65) return 4;
+    return 3;
   }
 
-  function buildGallery() {
-    const grid = document.getElementById('galleryGrid');
-    grid.innerHTML = '';
-    ARTWORKS.forEach((w, i) => {
-      const si = i % 8;
-      const tl = SUITS_TL[si], tr = SUITS_TR[si];
-      const bl = SUITS_BL[si], br = SUITS_BR[si];
-      const suit = SUIT_LABEL[si];
-      const suitLabel = (w.cat==='fanart' ? suit+' Fan Art' : suit+' Original');
-      const imgHtml = w.img ? `<img src="${w.img}" alt="${w.title}" loading="lazy">` : '';
-      const imgClass = w.img ? 'g-img' : 'g-img placeholder';
-
-      const el = document.createElement('div');
-      el.className = 'g-item';
-      el.dataset.cat = w.cat;
-      el.style.gridColumn = `span 4`; // 默认值，图片加载后更新
-
-      el.innerHTML = `
-        <div class="g-inner">
-          <div class="${imgClass}">${imgHtml}</div>
-          <div class="g-tint"></div>
-          <span class="gc tl ${IS_RED(tl)?'r':'k'}">${tl}</span>
-          <span class="gc tr ${IS_RED(tr)?'r':'k'}">${tr}</span>
-          <span class="gc bl ${IS_RED(bl)?'r':'k'}">${bl}</span>
-          <span class="gc br ${IS_RED(br)?'r':'k'}">${br}</span>
-          <div class="g-info">
-            <div class="g-info-suit">${suitLabel}</div>
-            <h3>${w.title}</h3>
-            <p>${w.detail}</p>
-          </div>
-        </div>
-        <span class="g-num">${String(i+1).padStart(2,'0')}</span>`;
-
-      grid.appendChild(el);
-
-      // 图片加载后根据实际比例更新列宽
-      if (w.img) {
-        const img = el.querySelector('img');
-        const applyRatio = () => {
-          const ratio = img.naturalWidth / img.naturalHeight;
-          el.style.gridColumn = `span ${getColSpan(ratio)}`;
-        };
-        if (img.complete && img.naturalWidth) {
-          applyRatio();
-        } else {
-          img.addEventListener('load', applyRatio);
+  function packRows(items) {
+    const rows = [];
+    const remaining = [...items];
+    while (remaining.length > 0) {
+      const row = [];
+      let used = 0;
+      const first = remaining.shift();
+      row.push(first);
+      used += first.span;
+      for (let j = 0; j < remaining.length && used < COLS; j++) {
+        const need = COLS - used;
+        const lo = Math.max(2, remaining[j].span - 1);
+        const hi = Math.min(8, remaining[j].span + 1);
+        if (need >= lo && need <= hi) {
+          const picked = remaining.splice(j, 1)[0];
+          picked.span = need;
+          row.push(picked);
+          used = COLS;
+          break;
         }
-      } else {
-        el.style.gridColumn = `span 4`;
       }
+      if (used < COLS) {
+        const base = Math.floor(COLS / row.length);
+        const extra = COLS - base * row.length;
+        row.forEach((item, k) => { item.span = base + (k < extra ? 1 : 0); });
+      }
+      rows.push(row);
+    }
+    return rows;
+  }
+
+  function measureImg(src) {
+    return new Promise(resolve => {
+      if (!src) return resolve({ w: 1, h: 1 });
+      const img = new Image();
+      img.onload  = () => resolve({ w: img.naturalWidth,  h: img.naturalHeight });
+      img.onerror = () => resolve({ w: 1, h: 1 });
+      img.src = src;
     });
   }
+
+  function makeCard(w, i, span) {
+    const si = i % 8;
+    const tl = SUITS_TL[si], tr = SUITS_TR[si];
+    const bl = SUITS_BL[si], br = SUITS_BR[si];
+    const suit = SUIT_LABEL[si];
+    const suitLabel = (w.cat === 'fanart' ? suit + ' Fan Art' : suit + ' Original');
+    const imgHtml = w.img ? `<img src="${w.img}" alt="${w.title}">` : '';
+    const imgClass = w.img ? 'g-img' : 'g-img placeholder';
+    const el = document.createElement('div');
+    el.className = 'g-item';
+    el.dataset.cat = w.cat;
+    el.style.gridColumn = `span ${span}`;
+    el.innerHTML = `
+      <div class="g-inner">
+        <div class="${imgClass}">${imgHtml}</div>
+        <div class="g-tint"></div>
+        <span class="gc tl ${IS_RED(tl)?'r':'k'}">${tl}</span>
+        <span class="gc tr ${IS_RED(tr)?'r':'k'}">${tr}</span>
+        <span class="gc bl ${IS_RED(bl)?'r':'k'}">${bl}</span>
+        <span class="gc br ${IS_RED(br)?'r':'k'}">${br}</span>
+        <div class="g-info">
+          <div class="g-info-suit">${suitLabel}</div>
+          <h3>${w.title}</h3>
+          <p>${w.detail}</p>
+        </div>
+      </div>
+      <span class="g-num">${String(i + 1).padStart(2, '0')}</span>`;
+    return el;
+  }
+
+  async function buildGallery() {
+    const grid = document.getElementById('galleryGrid');
+    grid.innerHTML = `<div style="grid-column:span 12;text-align:center;padding:60px 0;
+      color:var(--blue-deep);font-family:'IM Fell English',serif;font-size:1.1rem;
+      letter-spacing:.15em;opacity:.7;">♠ &nbsp; Loading &nbsp; ♠</div>`;
+
+    const sizes = await Promise.all(ARTWORKS.map(w => measureImg(w.img)));
+
+    const items = ARTWORKS.map((w, i) => ({
+      idx: i,
+      span: ratioToSpan(sizes[i].w / sizes[i].h),
+      ratio: sizes[i].w / sizes[i].h
+    }));
+
+    const rows = packRows(items);
+    grid.innerHTML = '';
+    rows.forEach(row => {
+      row.forEach(item => {
+        grid.appendChild(makeCard(ARTWORKS[item.idx], item.idx, item.span));
+      });
+    });
+
+    bindFilter();
+  }
+
   buildGallery();
 
   /* ════════════════════════════════════════
      GALLERY FILTER
   ════════════════════════════════════════ */
-  document.querySelectorAll('.filter-btn').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      const f = btn.dataset.filter;
-      document.querySelectorAll('.g-item').forEach(item=>{
-        item.classList.toggle('hidden', f!=='all' && item.dataset.cat!==f);
+  function bindFilter() {
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const f = btn.dataset.filter;
+        document.querySelectorAll('.g-item').forEach(item => {
+          item.classList.toggle('hidden', f !== 'all' && item.dataset.cat !== f);
+        });
       });
     });
-  });
+  }
 
   /* ════════════════════════════════════════
      LANGUAGE SWITCHER
