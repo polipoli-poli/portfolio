@@ -366,11 +366,19 @@
     .filter-btn.active,.filter-btn:hover{background:var(--navy);color:var(--cream);}
 
     .gallery-grid{
-      display:grid; grid-template-columns:repeat(12,1fr);
-      gap:14px; align-items:start;
+      display:flex;
+      align-items:flex-start;
+      gap:0;
+    }
+    .masonry-col{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+      padding:0 8px;
     }
     .g-item{position:relative; overflow:visible; cursor:none; transition:opacity .35s, transform .35s;}
-    .g-item.hidden{opacity:0;pointer-events:none;transform:scale(.96);}
+    .g-item.hidden{display:none;}
 
     .g-inner{
       position:relative; width:100%;
@@ -537,8 +545,9 @@
       nav{padding:0 1.5rem;}
       .lang-switcher{display:none;}
       #gallery{padding:5rem 1.5rem;}
-      .gallery-grid{grid-template-columns:1fr 1fr; gap:10px;}
-      .g-item{grid-column:span 1!important;}
+      .gallery-grid{ gap:0; }
+      .masonry-col:nth-child(3){ display:none; }
+      .masonry-col{ padding:0 5px; gap:10px; }
       .footer-inner{flex-direction:column;gap:1.5rem;text-align:center;}
     }
   </style>
@@ -863,112 +872,24 @@
   const IS_RED = (s) => s==='♥'||s==='♦';
 
   /* ════════════════════════════════════════
-     ★ 智能行式布局系统（Justified Row Layout）★
-     参考 Google Photos / Flickr 的排版逻辑：
-     1. 并行预加载所有图片，获取真实宽高比
-     2. 设定"目标行高"，按比例累加宽度
-     3. 当一行宽度超出容器时封行，等比缩放填满容器
-     4. 每张图的列宽 = 它在该行宽度中的占比 × 12列
-     5. 端数行：图片少时适当放大，不强制填满
+     ★ 瀑布流布局系统（Masonry Layout）★
+     3列瀑布流，图片按实际高度堆叠，无裁切无变形
+     featured 图强制放入最短列且宽度撑满该列
   ════════════════════════════════════════ */
-  const COLS = 12;
-  const TARGET_ROW_RATIO = 2.2; // 目标行宽/行高比（值越大，每行放更多图）
+
+  const MASONRY_COLS = 3;
 
   function measureImg(src) {
     return new Promise(resolve => {
       if (!src) return resolve({ w: 4, h: 3 });
       const img = new Image();
-      img.onload  = () => resolve({ w: img.naturalWidth,  h: img.naturalHeight });
+      img.onload  = () => resolve({ w: img.naturalWidth, h: img.naturalHeight });
       img.onerror = () => resolve({ w: 4, h: 3 });
       img.src = src;
     });
   }
 
-  /* 将比例列表用 justified 算法分行
-     返回 [ [{idx, cols}, ...], ... ]
-     竖图保底列数更高，不会被横图挤扁
-  */
-
-  // featured 图强制最小列数
-  const FEATURED_MIN_COLS = 7;
-
-  // 根据比例给"最低保底列数"，竖图给更多空间
-  function minColsForRatio(r, featured) {
-    if (featured) return FEATURED_MIN_COLS;
-    if (r < 0.55) return 5;   // 极竖
-    if (r < 0.75) return 4;   // 普通竖图
-    if (r < 1.1)  return 4;   // 接近方形
-    return 3;                  // 横图不需要保底
-  }
-
-  // items: [{ratio, featured}, ...]
-  function justifyRows(items) {
-    const ratios = items.map(x => x.ratio);
-    const rows = [];
-    let rowStart = 0;
-
-    while (rowStart < ratios.length) {
-      let cumRatio = 0;
-      let rowEnd = rowStart;
-
-      while (rowEnd < ratios.length) {
-        cumRatio += ratios[rowEnd];
-        rowEnd++;
-        if (cumRatio >= TARGET_ROW_RATIO) break;
-      }
-
-      const rowRatios = ratios.slice(rowStart, rowEnd);
-      const total = rowRatios.reduce((a, b) => a + b, 0);
-      const isLast = rowEnd >= ratios.length;
-
-      // 先按比例计算原始列数
-      const scale = isLast ? Math.min(1, TARGET_ROW_RATIO / total) * (total / TARGET_ROW_RATIO) : 1;
-      let rawCols = rowRatios.map(r => (r / total) * COLS * (isLast ? scale : 1));
-
-      // 应用保底列数（不能低于 minColsForRatio）
-      let intCols = rawCols.map((c, k) => {
-        const minC = minColsForRatio(rowRatios[k], items[rowStart + k].featured);
-        return Math.max(minC, Math.round(c));
-      });
-
-      if (!isLast) {
-        // 修正舍入误差，让总和精确等于 COLS
-        let diff = COLS - intCols.reduce((a, b) => a + b, 0);
-        const order = rawCols
-          .map((c, i) => ({ i, frac: c - Math.floor(c) }))
-          .sort((a, b) => b.frac - a.frac);
-        for (let k = 0; diff !== 0 && k < order.length; k++) {
-          const idx = order[k].i;
-          const minC = minColsForRatio(rowRatios[idx], items[rowStart + idx].featured);
-          if (diff > 0) { intCols[idx]++; diff--; }
-          else if (diff < 0 && intCols[idx] > minC) { intCols[idx]--; diff++; }
-        }
-        // 若保底导致总和超过12，从横图里扣（它们没有高保底）
-        let overflow = intCols.reduce((a,b)=>a+b,0) - COLS;
-        if (overflow > 0) {
-          // 优先从横图（ratio>1）扣列
-          const byRatio = rowRatios
-            .map((r,i)=>({i,r}))
-            .filter(x=>x.r>1.0)
-            .sort((a,b)=>b.r-a.r);
-          for (const {i} of byRatio) {
-            if (overflow <= 0) break;
-            if (intCols[i] > 3) { intCols[i]--; overflow--; }
-          }
-        }
-      }
-
-      rows.push(rowRatios.map((_, k) => ({
-        idx: rowStart + k,
-        cols: intCols[k]
-      })));
-
-      rowStart = rowEnd;
-    }
-    return rows;
-  }
-
-  function makeCard(w, i, cols) {
+  function makeCard(w, i) {
     const si = i % 8;
     const tl = SUITS_TL[si], tr = SUITS_TR[si];
     const bl = SUITS_BL[si], br = SUITS_BR[si];
@@ -979,7 +900,6 @@
     const el = document.createElement('div');
     el.className = 'g-item';
     el.dataset.cat = w.cat;
-    el.style.gridColumn = `span ${cols}`;
     el.innerHTML = `
       <div class="g-inner">
         <div class="${imgClass}">${imgHtml}</div>
@@ -999,30 +919,47 @@
     return el;
   }
 
-  async function buildGallery() {
+  async function buildGallery(filterCat) {
     const grid = document.getElementById('galleryGrid');
-    grid.innerHTML = `<div style="grid-column:span 12;text-align:center;padding:60px 0;
+    grid.innerHTML = `<div style="flex:1;text-align:center;padding:60px 0;
       color:var(--blue-deep);font-family:'IM Fell English',serif;font-size:1.1rem;
       letter-spacing:.15em;opacity:.7;">♠ &nbsp; Loading &nbsp; ♠</div>`;
 
-    const sizes = await Promise.all(ARTWORKS.map(w => measureImg(w.img)));
-    const items = ARTWORKS.map((w, i) => ({
-      ratio: sizes[i].w / sizes[i].h,
-      featured: !!w.featured
-    }));
+    // 预加载所有图片尺寸（只做一次）
+    if (!buildGallery._sizes) {
+      buildGallery._sizes = await Promise.all(ARTWORKS.map(w => measureImg(w.img)));
+    }
+    const sizes = buildGallery._sizes;
 
-    const rows = justifyRows(items);
+    // 过滤当前分类
+    const visible = ARTWORKS
+      .map((w, i) => ({ w, i, ratio: sizes[i].w / sizes[i].h }))
+      .filter(({ w }) => !filterCat || filterCat === 'all' || w.cat === filterCat);
+
+    // 建3列DOM容器
     grid.innerHTML = '';
-    rows.forEach(row => {
-      row.forEach(item => {
-        grid.appendChild(makeCard(ARTWORKS[item.idx], item.idx, item.cols));
-      });
+    const cols = [];
+    for (let c = 0; c < MASONRY_COLS; c++) {
+      const col = document.createElement('div');
+      col.className = 'masonry-col';
+      grid.appendChild(col);
+      cols.push({ el: col, height: 0 });
+    }
+
+    // 依次把每张图塞进当前最短的列
+    visible.forEach(({ w, i, ratio }) => {
+      // 找最短列
+      const shortest = cols.reduce((a, b) => a.height <= b.height ? a : b);
+      const card = makeCard(w, i);
+      shortest.el.appendChild(card);
+      // 用宽高比估算该列增加的高度（列宽相同，高度 ∝ 1/ratio）
+      shortest.height += 1 / ratio + 0.05; // +0.05 是 gap 的占比估算
     });
 
     bindFilter();
   }
 
-  buildGallery();
+  buildGallery('all');
 
   /* ════════════════════════════════════════
      GALLERY FILTER
@@ -1032,10 +969,7 @@
       btn.addEventListener('click', () => {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        const f = btn.dataset.filter;
-        document.querySelectorAll('.g-item').forEach(item => {
-          item.classList.toggle('hidden', f !== 'all' && item.dataset.cat !== f);
-        });
+        buildGallery(btn.dataset.filter);
       });
     });
   }
