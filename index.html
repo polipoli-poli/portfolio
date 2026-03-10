@@ -1142,8 +1142,11 @@
 
     // 委托：点击 gallery 里的图片触发灯箱
     document.getElementById('galleryGrid').addEventListener('click', e => {
-      const img = e.target.closest('.g-img')?.querySelector('img');
-      if (img) openLightbox(img.src, img.alt);
+      // e.target 可能是 img 本身，也可能是 .g-img 容器
+      const img = e.target.tagName === 'IMG'
+        ? e.target
+        : e.target.closest('.g-img')?.querySelector('img');
+      if (img && img.src) openLightbox(img.src, img.alt);
     });
   })();
 
