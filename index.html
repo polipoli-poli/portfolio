@@ -863,64 +863,85 @@
   const IS_RED = (s) => s==='♥'||s==='♦';
 
   /* ════════════════════════════════════════
-     ★ 智能行填充布局系统 ★
-     1. 并行预加载全部图片，获取真实尺寸
-     2. 比例 → 首选列宽
-     3. 贪心行打包：逐行凑满 12 列
-     4. 全部就绪后一次性渲染，无闪烁
+     ★ 智能行式布局系统（Justified Row Layout）★
+     参考 Google Photos / Flickr 的排版逻辑：
+     1. 并行预加载所有图片，获取真实宽高比
+     2. 设定"目标行高"，按比例累加宽度
+     3. 当一行宽度超出容器时封行，等比缩放填满容器
+     4. 每张图的列宽 = 它在该行宽度中的占比 × 12列
+     5. 端数行：图片少时适当放大，不强制填满
   ════════════════════════════════════════ */
   const COLS = 12;
-
-  function ratioToSpan(r) {
-    if (r >= 2.0) return 7;
-    if (r >= 1.4) return 6;
-    if (r >= 0.95) return 5;
-    if (r >= 0.65) return 4;
-    return 3;
-  }
-
-  function packRows(items) {
-    const rows = [];
-    const remaining = [...items];
-    while (remaining.length > 0) {
-      const row = [];
-      let used = 0;
-      const first = remaining.shift();
-      row.push(first);
-      used += first.span;
-      for (let j = 0; j < remaining.length && used < COLS; j++) {
-        const need = COLS - used;
-        const lo = Math.max(2, remaining[j].span - 1);
-        const hi = Math.min(8, remaining[j].span + 1);
-        if (need >= lo && need <= hi) {
-          const picked = remaining.splice(j, 1)[0];
-          picked.span = need;
-          row.push(picked);
-          used = COLS;
-          break;
-        }
-      }
-      if (used < COLS) {
-        const base = Math.floor(COLS / row.length);
-        const extra = COLS - base * row.length;
-        row.forEach((item, k) => { item.span = base + (k < extra ? 1 : 0); });
-      }
-      rows.push(row);
-    }
-    return rows;
-  }
+  const TARGET_ROW_RATIO = 2.8; // 目标行宽/行高比（值越大，每行放更多图）
 
   function measureImg(src) {
     return new Promise(resolve => {
-      if (!src) return resolve({ w: 1, h: 1 });
+      if (!src) return resolve({ w: 4, h: 3 });
       const img = new Image();
       img.onload  = () => resolve({ w: img.naturalWidth,  h: img.naturalHeight });
-      img.onerror = () => resolve({ w: 1, h: 1 });
+      img.onerror = () => resolve({ w: 4, h: 3 });
       img.src = src;
     });
   }
 
-  function makeCard(w, i, span) {
+  /* 将比例列表用 justified 算法分行
+     返回 [ [{idx, cols}, ...], ... ]
+     cols 是 12 列网格中该图占的列数（整数，最小1）
+  */
+  function justifyRows(ratios) {
+    const rows = [];
+    let rowStart = 0;
+
+    while (rowStart < ratios.length) {
+      let cumRatio = 0;
+      let rowEnd = rowStart;
+
+      // 累加宽高比，直到超过目标行比例
+      while (rowEnd < ratios.length) {
+        cumRatio += ratios[rowEnd];
+        rowEnd++;
+        if (cumRatio >= TARGET_ROW_RATIO) break;
+      }
+
+      const rowRatios = ratios.slice(rowStart, rowEnd);
+      const total = rowRatios.reduce((a, b) => a + b, 0);
+
+      // 是否是最后一行（不强制填满，但至少给合理宽度）
+      const isLast = rowEnd >= ratios.length;
+      const scaleFactor = isLast
+        ? Math.min(1, TARGET_ROW_RATIO / total) // 最后一行不超过满宽
+        : 1;
+
+      // 分配列数：按比例占 12 列，保证每图至少 2 列
+      const rawCols = rowRatios.map(r => (r / total) * COLS * (isLast ? scaleFactor * (total / TARGET_ROW_RATIO) : 1));
+
+      // 取整并修正总和为 12（非最后行）
+      let intCols = rawCols.map(c => Math.max(2, Math.round(c)));
+      if (!isLast) {
+        // 修正舍入误差，让总和精确等于 COLS
+        let diff = COLS - intCols.reduce((a, b) => a + b, 0);
+        // 按小数部分从大到小调整
+        const order = rawCols
+          .map((c, i) => ({ i, frac: c - Math.floor(c) }))
+          .sort((a, b) => b.frac - a.frac);
+        for (let k = 0; diff !== 0 && k < order.length; k++) {
+          const idx = order[k].i;
+          if (diff > 0) { intCols[idx]++; diff--; }
+          else if (diff < 0 && intCols[idx] > 2) { intCols[idx]--; diff++; }
+        }
+      }
+
+      rows.push(rowRatios.map((_, k) => ({
+        idx: rowStart + k,
+        cols: intCols[k]
+      })));
+
+      rowStart = rowEnd;
+    }
+    return rows;
+  }
+
+  function makeCard(w, i, cols) {
     const si = i % 8;
     const tl = SUITS_TL[si], tr = SUITS_TR[si];
     const bl = SUITS_BL[si], br = SUITS_BR[si];
@@ -931,7 +952,7 @@
     const el = document.createElement('div');
     el.className = 'g-item';
     el.dataset.cat = w.cat;
-    el.style.gridColumn = `span ${span}`;
+    el.style.gridColumn = `span ${cols}`;
     el.innerHTML = `
       <div class="g-inner">
         <div class="${imgClass}">${imgHtml}</div>
@@ -957,18 +978,13 @@
       letter-spacing:.15em;opacity:.7;">♠ &nbsp; Loading &nbsp; ♠</div>`;
 
     const sizes = await Promise.all(ARTWORKS.map(w => measureImg(w.img)));
+    const ratios = sizes.map(s => s.w / s.h);
 
-    const items = ARTWORKS.map((w, i) => ({
-      idx: i,
-      span: ratioToSpan(sizes[i].w / sizes[i].h),
-      ratio: sizes[i].w / sizes[i].h
-    }));
-
-    const rows = packRows(items);
+    const rows = justifyRows(ratios);
     grid.innerHTML = '';
     rows.forEach(row => {
       row.forEach(item => {
-        grid.appendChild(makeCard(ARTWORKS[item.idx], item.idx, item.span));
+        grid.appendChild(makeCard(ARTWORKS[item.idx], item.idx, item.cols));
       });
     });
 
