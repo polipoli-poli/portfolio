@@ -458,7 +458,7 @@
       position:relative; box-shadow:10px 10px 0 var(--blue); overflow:hidden;
     }
     
-    .about-frame::after{content:'';position:absolute;inset:10px;border:1px solid var(--blue-deep);}
+    .about-frame::after{content:'';position:absolute;inset:10px;border:1px solid var(--blue-deep);z-index:2;pointer-events:none;}
     .about-frame-inner{position:relative;z-index:1;text-align:center;}
     .about-suits-big{font-size:2rem;letter-spacing:.3rem;margin-bottom:.8rem;opacity:.25;}
     .about-suits-big .r{color:var(--red);}
